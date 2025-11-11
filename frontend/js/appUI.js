@@ -377,4 +377,3 @@
 
     /* ===== Search filter ===== */
     filterInput.addEventListener('input', (e)=> renderCampaignList(e.target.value));
-
