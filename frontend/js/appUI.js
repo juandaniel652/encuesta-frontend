@@ -86,19 +86,30 @@
 
       // Campaign info form
       const form = document.createElement('div');
+      const startVal = campaign.dateStart ? new Date(campaign.dateStart).toISOString().slice(0,10) : '';
+      const endVal = campaign.dateEnd ? new Date(campaign.dateEnd).toISOString().slice(0,10) : '';
+
       form.innerHTML = `
-        <div style="display:flex;gap:10px;margin-bottom:12px">
-          <div style="flex:1"><label>Nombre</label><input type="text" id="campName" value="${escapeHtml(campaign.name)}" /></div>
-          <div style="width:160px"><label>Fecha inicio</label><input type="date" id="campStart" value="${campaign.dateStart ? campaign.dateStart.split('T')[0] : ''}" /></div>
-          <div style="width:160px"><label>Fecha fin</label><input type="date" id="campEnd" value="${campaign.dateEnd ? campaign.dateEnd.split('T')[0] : ''}" /></div>
+        <div class="row">
+          <div class="col flex-1">
+            <label>Nombre</label>
+            <input type="text" id="campName" value="${escapeHtml(campaign.name)}" />
+          </div>
+          <div class="col col-date">
+            <label>Fecha inicio</label>
+            <input type="date" id="campStart" value="${startVal}" />
+          </div>
+          <div class="col col-date">
+            <label>Fecha fin</label>
+            <input type="date" id="campEnd" value="${endVal}" />
+          </div>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div class="row">
           <button id="saveCampaignBtn" class="btn btn-primary">Guardar campaña</button>
           <button id="duplicateBtn" class="btn btn-ghost">Duplicar</button>
           <button id="deleteCampaignBtn" class="btn btn-ghost">Eliminar</button>
         </div>
-      `;
-      wrapper.appendChild(form);
+      `;     wrapper.appendChild(form);
 
       // Questions area
       const qArea = document.createElement('div');

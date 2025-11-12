@@ -32,6 +32,19 @@ body{
   min-height:640px;
 }
 
+
+.row {
+  display:flex;
+  gap:10px;
+  margin-bottom:12px;
+  flex-wrap:wrap; /* ✅ permite que se acomoden en móvil */
+}
+
+.col-date {
+  flex:1 1 160px; /* ✅ ancho mínimo pero flexible */
+  min-width:140px;
+}
+
 /* ===== Sidebar ===== */
 .sidebar{
   padding:18px;
@@ -98,3 +111,10 @@ input[type=text], input[type=date], select, textarea{width:100%;padding:10px;bor
   .campaign-list{max-height:none}
   .responses-table{font-size:12px}
 }
+
+@media (max-width:480px){
+  .col-date, .flex-1 {
+    flex:1 1 100%; /* ✅ inputs ocupan todo el ancho en móvil */
+  }
+}
+
