@@ -466,73 +466,222 @@ btnViewResponses.addEventListener('click', ()=>{
   renderResponsesView(camp);
 });
 
+/* ===== View responses como REPORTES ===== */
 function renderResponsesView(camp){
   contentArea.innerHTML = '';
   const area = document.createElement('div');
-  area.innerHTML = `<h4>Respuestas — ${escapeHtml(camp.name)}</h4>`;
+  area.innerHTML = `<h4>Reportes — ${escapeHtml(camp.name)}</h4>`;
 
-  const campResponses = responses.filter(r=> r.campaignId === camp.id).sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+  const campResponses = responses.filter(r=> r.campaignId === camp.id);
   const meta = document.createElement('div'); 
   meta.className='small'; 
   meta.textContent = campResponses.length + ' respuestas registradas'; 
   area.appendChild(meta);
 
-  if(campResponses.length===0){ 
+  if(campResponses.length === 0){ 
     area.innerHTML += '<p class="small">No hay respuestas aún.</p>'; 
+    const backBtn = document.createElement('button');
+    backBtn.className = 'btn btn-ghost';
+    backBtn.textContent = 'Volver';
+    backBtn.style.marginTop = '20px';
+    backBtn.addEventListener('click', ()=> renderCampaignEditor(camp));
+    area.appendChild(backBtn);
     contentArea.appendChild(area); 
     return; 
   }
 
-  const table = document.createElement('table'); table.className='responses-table';
-  const thead = document.createElement('thead'); 
-  thead.innerHTML = '<tr><th>Fecha</th><th>Cliente</th><th>Respuestas</th><th></th></tr>'; 
-  table.appendChild(thead);
+  // Procesar estadísticas por pregunta
+  const totalResponses = campResponses.length;
+  
+  camp.questions.forEach((q, qIndex) => {
+    const qBlock = document.createElement('div');
+    qBlock.className = 'report-question-block';
+    qBlock.style.marginTop = '24px';
+    qBlock.style.padding = '16px';
+    qBlock.style.background = '#f8f9fa';
+    qBlock.style.borderRadius = '8px';
+    
+    // Título de pregunta
+    const qTitle = document.createElement('div');
+    qTitle.style.fontWeight = '600';
+    qTitle.style.fontSize = '16px';
+    qTitle.style.marginBottom = '12px';
+    qTitle.textContent = `${qIndex + 1}. ${q.text}`;
+    qBlock.appendChild(qTitle);
 
-  const tbody = document.createElement('tbody');
+    // Contar respuestas por opción
+    const optionCounts = {};
+    q.options.forEach(opt => optionCounts[opt] = []);
 
-  campResponses.forEach(r=>{
-    const tr = document.createElement('tr');
-    const tdDate = document.createElement('td'); tdDate.textContent = new Date(r.createdAt).toLocaleString();
-    const tdClient = document.createElement('td'); 
-    tdClient.innerHTML = `<div style="font-weight:600">${escapeHtml(r.clientName)}</div><div class="tiny">${escapeHtml(r.clientNumber)}</div>`;
-    const tdAnswers = document.createElement('td');
-    const ansWrap = document.createElement('div');
-
-    r.answers.forEach(a=>{
-      const q = camp.questions.find(x=>x.id===a.questionId);
-      const line = document.createElement('div'); 
-      line.innerHTML = `<div style="font-weight:600;font-size:13px">${escapeHtml(q ? q.text : 'Pregunta eliminada')}</div><div class="small">${a.response.join(', ') || '<i>Sin respuesta</i>'}</div>`;
-      ansWrap.appendChild(line);
+    campResponses.forEach(resp => {
+      const answer = resp.answers.find(a => a.questionId === q.id);
+      if(answer && answer.response && answer.response.length > 0){
+        const selectedOption = answer.response[0];
+        if(optionCounts[selectedOption]){
+          optionCounts[selectedOption].push({
+            clientName: resp.clientName,
+            clientNumber: resp.clientNumber,
+            date: resp.createdAt
+          });
+        }
+      }
     });
 
-    tdAnswers.appendChild(ansWrap);
+    // Mostrar cada opción con estadísticas
+    q.options.forEach(opt => {
+      const count = optionCounts[opt].length;
+      const percentage = totalResponses > 0 ? ((count / totalResponses) * 100).toFixed(1) : 0;
+      
+      const optRow = document.createElement('div');
+      optRow.className = 'report-option-row';
+      optRow.style.display = 'flex';
+      optRow.style.justifyContent = 'space-between';
+      optRow.style.alignItems = 'center';
+      optRow.style.padding = '10px 12px';
+      optRow.style.marginBottom = '6px';
+      optRow.style.background = 'white';
+      optRow.style.borderRadius = '6px';
+      optRow.style.cursor = count > 0 ? 'pointer' : 'default';
+      optRow.style.transition = 'all 0.2s';
+      
+      if(count > 0){
+        optRow.addEventListener('mouseenter', () => {
+          optRow.style.background = '#e3f2fd';
+          optRow.style.transform = 'translateX(4px)';
+        });
+        optRow.addEventListener('mouseleave', () => {
+          optRow.style.background = 'white';
+          optRow.style.transform = 'translateX(0)';
+        });
+      }
 
-    const tdActions = document.createElement('td'); 
-    tdActions.innerHTML = `<button class="btn btn-ghost btn-delete-response">Eliminar</button>`;
+      const leftSide = document.createElement('div');
+      leftSide.style.display = 'flex';
+      leftSide.style.alignItems = 'center';
+      leftSide.style.gap = '12px';
+      leftSide.style.flex = '1';
 
-    tr.appendChild(tdDate); 
-    tr.appendChild(tdClient); 
-    tr.appendChild(tdAnswers); 
-    tr.appendChild(tdActions);
-    tbody.appendChild(tr);
+      const optLabel = document.createElement('span');
+      optLabel.textContent = opt;
+      optLabel.style.fontWeight = '500';
 
-    tdActions.querySelector('.btn-delete-response').addEventListener('click', ()=>{
-      if(!confirm('Eliminar esta respuesta?')) return; 
-      responses = responses.filter(x=> x.id!==r.id); 
-      writeResponses(responses); 
-      renderResponsesView(camp);
+      const barContainer = document.createElement('div');
+      barContainer.style.flex = '1';
+      barContainer.style.height = '8px';
+      barContainer.style.background = '#e0e0e0';
+      barContainer.style.borderRadius = '4px';
+      barContainer.style.overflow = 'hidden';
+      barContainer.style.maxWidth = '200px';
+
+      const barFill = document.createElement('div');
+      barFill.style.width = percentage + '%';
+      barFill.style.height = '100%';
+      barFill.style.background = count > 0 ? '#2196F3' : '#e0e0e0';
+      barFill.style.transition = 'width 0.3s';
+      barContainer.appendChild(barFill);
+
+      leftSide.appendChild(optLabel);
+      leftSide.appendChild(barContainer);
+
+      const rightSide = document.createElement('div');
+      rightSide.style.display = 'flex';
+      rightSide.style.gap = '16px';
+      rightSide.style.alignItems = 'center';
+
+      const countSpan = document.createElement('span');
+      countSpan.style.fontWeight = '600';
+      countSpan.style.color = '#666';
+      countSpan.style.minWidth = '40px';
+      countSpan.style.textAlign = 'right';
+      countSpan.textContent = `${count}`;
+
+      const percentSpan = document.createElement('span');
+      percentSpan.style.fontWeight = '600';
+      percentSpan.style.color = '#2196F3';
+      percentSpan.style.minWidth = '60px';
+      percentSpan.style.textAlign = 'right';
+      percentSpan.textContent = `${percentage}%`;
+
+      rightSide.appendChild(countSpan);
+      rightSide.appendChild(percentSpan);
+
+      optRow.appendChild(leftSide);
+      optRow.appendChild(rightSide);
+
+      // Detalle expandible (clientes que eligieron esta opción)
+      const detailsDiv = document.createElement('div');
+      detailsDiv.style.display = 'none';
+      detailsDiv.style.marginTop = '8px';
+      detailsDiv.style.padding = '12px';
+      detailsDiv.style.background = '#f0f7ff';
+      detailsDiv.style.borderRadius = '6px';
+      detailsDiv.style.borderLeft = '3px solid #2196F3';
+
+      if(count > 0){
+        const clientsTitle = document.createElement('div');
+        clientsTitle.style.fontWeight = '600';
+        clientsTitle.style.marginBottom = '8px';
+        clientsTitle.style.fontSize = '13px';
+        clientsTitle.textContent = `Clientes que eligieron "${opt}":`;
+        detailsDiv.appendChild(clientsTitle);
+
+        optionCounts[opt].forEach(client => {
+          const clientRow = document.createElement('div');
+          clientRow.style.padding = '6px 8px';
+          clientRow.style.background = 'white';
+          clientRow.style.borderRadius = '4px';
+          clientRow.style.marginBottom = '4px';
+          clientRow.style.fontSize = '13px';
+          
+          const dateStr = new Date(client.date).toLocaleDateString() + ' ' + new Date(client.date).toLocaleTimeString();
+          clientRow.innerHTML = `
+            <div style="display:flex;justify-content:space-between">
+              <span><strong>${escapeHtml(client.clientName)}</strong> (${escapeHtml(client.clientNumber)})</span>
+              <span class="tiny" style="color:#666">${dateStr}</span>
+            </div>
+          `;
+          detailsDiv.appendChild(clientRow);
+        });
+
+        optRow.addEventListener('click', () => {
+          const isVisible = detailsDiv.style.display === 'block';
+          detailsDiv.style.display = isVisible ? 'none' : 'block';
+          optRow.style.background = isVisible ? 'white' : '#e3f2fd';
+        });
+      }
+
+      qBlock.appendChild(optRow);
+      qBlock.appendChild(detailsDiv);
     });
+
+    area.appendChild(qBlock);
   });
 
-  table.appendChild(tbody);
-  area.appendChild(table);
+  // Botones de acciones
+  const actionsDiv = document.createElement('div');
+  actionsDiv.style.marginTop = '24px';
+  actionsDiv.style.display = 'flex';
+  actionsDiv.style.gap = '12px';
+  
+  const exportBtn = document.createElement('button');
+  exportBtn.className = 'btn btn-primary';
+  exportBtn.textContent = 'Exportar respuestas (JSON)';
+  exportBtn.addEventListener('click', ()=>{
+    const data = responses.filter(r=> r.campaignId===camp.id);
+    downloadJSON(data, camp.name.replace(/[^a-z0-9]/gi,'_') + '_responses.json');
+  });
 
-  const exportBtn = document.createElement('div'); 
-  exportBtn.style.marginTop='12px';
-  exportBtn.innerHTML = '<button id="exportCamp" class="btn btn-primary">Exportar respuestas (JSON)</button> <button id="backBtn" class="btn btn-ghost">Volver</button>';
-  area.appendChild(exportBtn);
+  const backBtn = document.createElement('button');
+  backBtn.className = 'btn btn-ghost';
+  backBtn.textContent = 'Volver';
+  backBtn.addEventListener('click', ()=> renderCampaignEditor(camp));
+
+  actionsDiv.appendChild(exportBtn);
+  actionsDiv.appendChild(backBtn);
+  area.appendChild(actionsDiv);
 
   contentArea.appendChild(area);
+
 
   document.getElementById('backBtn').addEventListener('click', ()=>{ 
     renderCampaignEditor(camp); 
