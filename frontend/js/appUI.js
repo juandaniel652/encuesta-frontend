@@ -1,5 +1,4 @@
-
-    /* ===== Data model (localStorage keys) ===== */
+/* ===== Data model (localStorage keys) ===== */
     const KEY_CAMPAIGNS = 'andros_campaigns_v1';
     const KEY_RESPONSES = 'andros_responses_v1';
 
@@ -81,6 +80,34 @@
     function renderCampaignEditor(campaign){
       if(!campaign){ contentArea.innerHTML = '<p class="small">Seleccioná una campaña para ver o editar sus preguntas, o crea una nueva.</p>'; return; }
 
+      // Si es una campaña con base de clientes, mostrar mensaje
+      if(campaign.clientType === 'with_clients'){
+        contentArea.innerHTML = '';
+        const wrapper = document.createElement('div');
+        wrapper.style.maxWidth = '600px';
+        wrapper.style.margin = '40px auto';
+        wrapper.style.textAlign = 'center';
+        wrapper.innerHTML = `
+          <h3>${escapeHtml(campaign.name)}</h3>
+          <div style="padding:30px;background:#f0f0f0;border-radius:8px;margin:20px 0">
+            <p style="font-size:18px;color:#666">Esta funcionalidad estará disponible próximamente.</p>
+            <p class="small" style="margin-top:10px">Campaña configurada para trabajar con base de clientes.</p>
+          </div>
+          <button id="deleteCampaignSimple" class="btn btn-ghost">Eliminar campaña</button>
+        `;
+        contentArea.appendChild(wrapper);
+        
+        document.getElementById('deleteCampaignSimple').addEventListener('click', ()=>{
+          if(!confirm('Eliminar campaña?')) return;
+          campaigns = campaigns.filter(c=> c.id!==campaign.id);
+          writeCampaigns(campaigns);
+          selectedCampaignId = null; 
+          renderCampaignList(filterInput.value); 
+          contentArea.innerHTML = '<p class="small">Campaña eliminada.</p>';
+        });
+        return;
+      }
+
       contentArea.innerHTML = '';
       const wrapper = document.createElement('div');
 
@@ -105,7 +132,7 @@
           </div>
         </div>
         <div class="row">
-          <button id="saveCampaignBtn" class="btn btn-primary">Guardar campaña</button>
+          <button id="saveCampaignBtn" class="btn btn-primary">Guardar/Modificar campaña</button>
           <button id="duplicateBtn" class="btn btn-ghost">Duplicar</button>
           <button id="deleteCampaignBtn" class="btn btn-ghost">Eliminar</button>
         </div>
@@ -185,19 +212,9 @@
             <button class="btn btn-ghost btn-delete-q">Eliminar</button>
           </div>
         </div>
-        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-          <label class="small">Tipo:</label>
-          <select class="q-type">
-            <option value="single">Una opción (radio)</option>
-            <option value="multiple">Multiples (checkbox)</option>
-          </select>
-        </div>
         <div class="options"></div>
       `;
       card.appendChild(inner);
-
-      // populate type
-      inner.querySelector('.q-type').value = q.type || 'single';
 
       // populate options
       const opts = inner.querySelector('.options');
@@ -220,7 +237,6 @@
 
       // events
       inner.querySelector('.q-text').addEventListener('change', (e)=>{ q.text = e.target.value; saveQuestionChanges(); });
-      inner.querySelector('.q-type').addEventListener('change', (e)=>{ q.type = e.target.value; saveQuestionChanges(); });
       inner.querySelector('.btn-add-option').addEventListener('click', ()=>{ q.options.push('Nueva opción'); saveQuestionChanges(); renderOptions(); });
       inner.querySelector('.btn-delete-q').addEventListener('click', ()=>{
         if(!confirm('Eliminar pregunta?')) return; campaign.questions = campaign.questions.filter(x=> x.id !== q.id); campaigns = campaigns.map(c=> c.id===campaign.id ? campaign : c); writeCampaigns(campaigns); renderCampaignEditor(campaign);
@@ -236,13 +252,81 @@
 
     /* ===== Create new campaign UI ===== */
     btnNewCampaign.addEventListener('click', ()=>{
-      const newCamp = { id: uid('camp'), name: 'Campaña sin nombre', dateStart: null, dateEnd: null, questions: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-      campaigns.unshift(newCamp); writeCampaigns(campaigns); renderCampaignList(filterInput.value); selectCampaign(newCamp.id);
+      renderClientTypeSelection();
     });
+
+    function renderClientTypeSelection(){
+      contentArea.innerHTML = '';
+      const el = document.createElement('div');
+      el.style.maxWidth = '600px';
+      el.style.margin = '40px auto';
+      el.style.textAlign = 'center';
+      el.innerHTML = `
+        <h3>Nueva Campaña</h3>
+        <p class="small" style="margin-bottom:30px">Seleccioná el tipo de campaña que querés crear:</p>
+        <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+          <button id="btnWithClients" class="btn btn-primary" style="padding:20px 30px;font-size:16px">
+            Con base de clientes
+          </button>
+          <button id="btnWithoutClients" class="btn btn-primary" style="padding:20px 30px;font-size:16px">
+            Sin clientes
+          </button>
+        </div>
+        <div style="margin-top:20px">
+          <button id="btnCancelType" class="btn btn-ghost">Cancelar</button>
+        </div>
+      `;
+      contentArea.appendChild(el);
+
+      document.getElementById('btnWithClients').addEventListener('click', ()=>{
+        const newCamp = { 
+          id: uid('camp'), 
+          name: 'Campaña sin nombre', 
+          dateStart: null, 
+          dateEnd: null, 
+          questions: [], 
+          createdAt: new Date().toISOString(), 
+          updatedAt: new Date().toISOString(),
+          clientType: 'with_clients'
+        };
+        campaigns.unshift(newCamp); 
+        writeCampaigns(campaigns); 
+        renderCampaignList(filterInput.value); 
+        selectCampaign(newCamp.id);
+        alert('Campaña "Con base de clientes" creada. Esta opción estará disponible próximamente.');
+      });
+
+      document.getElementById('btnWithoutClients').addEventListener('click', ()=>{
+        const newCamp = { 
+          id: uid('camp'), 
+          name: 'Campaña sin nombre', 
+          dateStart: null, 
+          dateEnd: null, 
+          questions: [], 
+          createdAt: new Date().toISOString(), 
+          updatedAt: new Date().toISOString(),
+          clientType: 'without_clients'
+        };
+        campaigns.unshift(newCamp); 
+        writeCampaigns(campaigns); 
+        renderCampaignList(filterInput.value); 
+        selectCampaign(newCamp.id);
+      });
+
+      document.getElementById('btnCancelType').addEventListener('click', ()=>{
+        contentArea.innerHTML = '<p class="small">Seleccioná una campaña para ver o editar sus preguntas, o crea una nueva.</p>';
+      });
+    }
 
     /* ===== Run campaign: fill survey for a client ===== */
     btnRunCampaign.addEventListener('click', ()=>{
-      if(!selectedCampaignId) return; const camp = campaigns.find(c=>c.id===selectedCampaignId); renderRunCampaign(camp);
+      if(!selectedCampaignId) return; 
+      const camp = campaigns.find(c=>c.id===selectedCampaignId);
+      if(camp.clientType === 'with_clients'){
+        alert('Esta funcionalidad estará disponible próximamente.');
+        return;
+      }
+      renderRunCampaign(camp);
     });
 
     function renderRunCampaign(camp){
@@ -267,7 +351,7 @@
           const id = uid('r');
           const wrap = document.createElement('label'); wrap.className='option-item';
           const input = document.createElement('input');
-          input.type = (q.type==='multiple') ? 'checkbox':'radio';
+          input.type = 'radio';
           input.name = 'q_'+q.id; input.value = op; input.id = id;
           const span = document.createElement('span'); span.textContent = op;
           wrap.appendChild(input); wrap.appendChild(span);
@@ -287,7 +371,13 @@
         camp.questions.forEach(q=>{
           const entries = [];
           const els = document.getElementsByName('q_'+q.id);
-          if(els.length){ if(q.type==='multiple'){ els.forEach(el=>{ if(el.checked) entries.push(el.value); }); } else { for(const e of els){ if(e.checked){ entries.push(e.value); break; } } }
+          if(els.length){ 
+            for(const e of els){ 
+              if(e.checked){ 
+                entries.push(e.value); 
+                break; 
+              } 
+            }
           }
           answer.answers.push({ questionId: q.id, response: entries });
         });
@@ -299,7 +389,13 @@
 
     /* ===== View responses ===== */
     btnViewResponses.addEventListener('click', ()=>{
-      if(!selectedCampaignId) return; const camp = campaigns.find(c=>c.id===selectedCampaignId); renderResponsesView(camp);
+      if(!selectedCampaignId) return; 
+      const camp = campaigns.find(c=>c.id===selectedCampaignId);
+      if(camp.clientType === 'with_clients'){
+        alert('Esta funcionalidad estará disponible próximamente.');
+        return;
+      }
+      renderResponsesView(camp);
     });
 
     function renderResponsesView(camp){
@@ -374,7 +470,7 @@
     /* ===== Init sample data if empty ===== */
     (function init(){
       if(campaigns.length===0){
-        const sample = { id: uid('camp'), name: 'Satisfacción instalación - AndrosNet', dateStart: new Date().toISOString(), dateEnd: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), questions: [
+        const sample = { id: uid('camp'), name: 'Satisfacción instalación - AndrosNet', dateStart: new Date().toISOString(), dateEnd: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), clientType: 'without_clients', questions: [
           { id: uid('q'), text: '¿Cómo calificarías el proceso de instalación de tu servicio?', type:'single', options:['Muy rápido y ordenado','Aceptable','Lento o con inconvenientes']},
           { id: uid('q'), text: '¿El técnico te explicó claramente el funcionamiento?', type:'single', options:['Sí, muy claro','Más o menos','No, me quedaron dudas']},
           { id: uid('q'), text: '¿El servicio funciona correctamente desde la instalación?', type:'single', options:['Sí, sin problemas','A veces presenta fallas','No funciona bien']},
