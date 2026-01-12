@@ -1,0 +1,4 @@
+backend/
+encuesta/
+.venv/
+node_modules/
