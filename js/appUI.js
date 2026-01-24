@@ -382,7 +382,7 @@ function renderRunCampaign(camp){
   });
 
   /* ======== VALIDACIÓN AGREGADA AQUÍ ======== */
-  document.getElementById('runForm').addEventListener('submit', (e)=>{
+  document.getElementById('runForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
     const num = document.getElementById('clientNumber').value.trim();
     const name = document.getElementById('clientName').value.trim();
@@ -448,8 +448,27 @@ function renderRunCampaign(camp){
       answer.answers.push({ questionId: q.id, response: entries });
     });
 
-    responses.push(answer); 
-    writeResponses(responses);
+    try {
+      const res = await fetch('https://backend-territorios.onrender.com', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(answer)
+      });
+    
+      if(!res.ok){
+        const t = await res.text();
+        throw new Error(t);
+      }
+    
+      alert('Respuesta registrada.');
+      renderCampaignEditor(camp);
+    
+    } catch(err){
+      console.error(err);
+      alert('Error guardando en el backend');
+    }
+
+
     alert('Respuesta registrada.');
     renderCampaignEditor(camp);
   });
@@ -682,15 +701,6 @@ function renderResponsesView(camp){
 
   contentArea.appendChild(area);
 
-
-  document.getElementById('backBtn').addEventListener('click', ()=>{ 
-    renderCampaignEditor(camp); 
-  });
-
-  document.getElementById('exportCamp').addEventListener('click', ()=>{
-    const data = responses.filter(r=> r.campaignId===camp.id);
-    downloadJSON(data, camp.name.replace(/[^a-z0-9]/gi,'_') + '_responses.json');
-  });
 }
 
 /* ===== Export / Import ===== */
