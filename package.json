@@ -1,0 +1,32 @@
+{
+  "name": "androsnet-campaign-manager",
+  "version": "2.0.0",
+  "description": "Sistema modular de gestión de campañas de encuestas para AndrosNet",
+  "type": "module",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "serve": "npx http-server -p 8000",
+    "serve:php": "php -S localhost:8000"
+  },
+  "keywords": [
+    "campaigns",
+    "surveys",
+    "androsnet",
+    "modular",
+    "vanilla-js"
+  ],
+  "author": "AndrosNet",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {},
+  "dependencies": {},
+  "browserslist": [
+    "last 2 versions",
+    "not dead",
+    "> 0.5%"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "your-repository-url"
+  }
+}

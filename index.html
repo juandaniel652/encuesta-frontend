@@ -17,20 +17,16 @@
           <div class="muted">Campañas de encuesta</div>
         </div>
       </div>
-
       <div style="display:flex;gap:8px;align-items:center;">
         <input id="filterInput" type="text" placeholder="Buscar campaña..." style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(2,6,23,0.06)" />
         <button id="btnNewCampaign" class="btn btn-primary" title="Crear campaña">+</button>
       </div>
-
       <div class="campaign-list" id="campaignList" aria-live="polite"></div>
-
       <div class="sidebar-footer">
         <button id="btnExport" class="btn btn-ghost">Exportar todo</button>
         <button id="btnImport" class="btn btn-ghost">Importar</button>
       </div>
     </aside>
-
     <main class="main">
       <div class="section-title">
         <h3 id="mainTitle">Seleccioná o creá una campaña</h3>
@@ -39,22 +35,21 @@
           <button id="btnViewResponses" class="btn btn-ghost" disabled>Reportes</button>
         </div>
       </div>
-
       <div id="contentArea">
         <p class="small">Para empezar: crea una campaña en la columna izquierda ("+") o selecciona una existente.</p>
       </div>
     </main>
   </div>
-
   <input id="importFile" type="file" accept="application/json" style="display:none" />
-
   
+  <!-- Configuración de API -->
   <script>
     window.__API_BASE__ = "https://backend-encuesta-cb7k.onrender.com/api";
   </script>
-
+  
+  <!-- Carga del sistema modular -->
+  <!-- Los archivos appData.js y appUI.js ahora cargan el sistema modular -->
   <script src="js/appData.js"></script>
   <script src="js/appUI.js"></script>
-  
 </body>
 </html>

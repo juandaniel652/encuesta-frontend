@@ -1,0 +1,41 @@
+androsnet-campaign-manager/
+│
+├── 📄 index.html                          # HTML principal (actualizado)
+├── 🎨 styles.css                          # CSS (mantener original, no incluido)
+│
+├── 📋 package.json                        # Metadata del proyecto
+│
+├── 📚 Documentación/
+│   ├── README.md                          # Guía principal
+│   ├── ARCHITECTURE.md                    # Diagramas de arquitectura
+│   ├── MIGRATION.md                       # Guía de migración
+│   └── EXECUTIVE_SUMMARY.md               # Resumen ejecutivo
+│
+└── 📁 src/                                # Código fuente
+    │
+    ├── 🚀 main.js                         # Entry point de la aplicación
+    │
+    ├── ⚙️ config/                         # Configuración
+    │   ├── constants.js                   # Constantes globales
+    │   └── environment.example.js         # Ejemplo de configuración de entorno
+    │
+    ├── 📊 models/                         # Modelos de datos (Lógica de negocio)
+    │   ├── Campaign.js                    # Modelo de Campaña
+    │   ├── Question.js                    # Modelo de Pregunta
+    │   └── Response.js                    # Modelo de Respuesta
+    │
+    ├── 🔌 services/                       # Servicios externos
+    │   ├── storageService.js              # Manejo de localStorage
+    │   └── apiService.js                  # Comunicación con backend
+    │
+    ├── 🎮 controllers/                    # Controladores (Lógica de coordinación)
+    │   └── AppController.js               # Controlador principal
+    │
+    ├── 🎨 views/                          # Vistas (Componentes UI)
+    │   ├── CampaignListView.js            # Vista de lista de campañas
+    │   ├── CampaignEditorView.js          # Vista de edición de campañas
+    │   ├── CampaignRunnerView.js          # Vista de ejecución de encuestas
+    │   └── ResponsesView.js               # Vista de reportes
+    │
+    └── 🛠️ utils/                          # Utilidades
+        └── helpers.js                     # Funciones auxiliares
