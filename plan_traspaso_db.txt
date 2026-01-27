@@ -1,0 +1,23 @@
+Fase 1: Análisis
+├── Revisar endpoints del backend
+├── Mapear estructura de datos
+└── Identificar diferencias
+
+Fase 2: Preparación
+├── Crear nuevos métodos en apiService.js
+├── Mantener localStorage como fallback
+└── Agregar manejo de errores robusto
+
+Fase 3: Migración Gradual
+├── Migrar campañas primero
+├── Luego migrar respuestas
+└── Mantener sincronización
+
+Fase 4: Transición
+├── Modo híbrido (BD + localStorage)
+├── Testing exhaustivo
+└── Migración completa
+
+Fase 5: Limpieza
+├── Remover código localStorage (opcional)
+└── Optimizaciones finales
