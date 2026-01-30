@@ -129,7 +129,11 @@ export class AppController {
   // CREAR CAMPAÑA → BACKEND DIRECTO
   async handleNewCampaign() {
     this.campaignEditorView.renderClientTypeSelection(async (clientType) => {
-      const newCampaign = new Campaign({ clientType });
+      const newCampaign = new Campaign({
+        name: 'Nueva campaña',
+        clientType,
+        dateStart: new Date().toISOString()
+      });
       const created = await apiService.createCampaign(newCampaign.toJSON());
       await this.loadData();
       this.selectedCampaignId = created.id;
