@@ -3,7 +3,6 @@
  * Define la estructura y operaciones de una campaña
  */
 
-import { generateUID } from '../utils/helpers.js';
 import { CLIENT_TYPES } from '../config/constants.js';
 
 /**
@@ -11,7 +10,7 @@ import { CLIENT_TYPES } from '../config/constants.js';
  */
 export class Campaign {
   constructor(data = {}) {
-    this.id = data.id || generateUID('camp');
+    this.id = data.id || null;
     this.name = data.name || 'Campaña sin nombre';
     this.dateStart = data.dateStart || null;
     this.dateEnd = data.dateEnd || null;
@@ -55,7 +54,7 @@ export class Campaign {
   duplicate() {
     const copy = new Campaign({
       ...this,
-      id: generateUID('camp'),
+      id: null,
       name: `${this.name} (copia)`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()

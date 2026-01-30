@@ -205,6 +205,8 @@ export class CampaignRunnerView {
       clientName
     });
 
+    console.log("ID real:", campaign.id);
+
     campaign.questions.forEach(question => {
       const elements = document.getElementsByName('q_' + question.id);
       const selectedValue = [];
