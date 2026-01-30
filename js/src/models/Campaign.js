@@ -99,12 +99,10 @@ export class Campaign {
     return {
       id: this.id,
       name: this.name,
-      dateStart: this.dateStart,
-      dateEnd: this.dateEnd,
-      questions: this.questions,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-      clientType: this.clientType
+      date_start: this.dateStart,
+      date_end: this.dateEnd,
+      client_type: this.clientType,
+      questions: this.questions
     };
   }
 

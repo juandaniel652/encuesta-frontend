@@ -134,6 +134,7 @@ export class AppController {
         clientType,
         dateStart: new Date().toISOString()
       });
+    
       const created = await apiService.createCampaign(newCampaign.toJSON());
       await this.loadData();
       this.selectedCampaignId = created.id;
