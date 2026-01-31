@@ -1,23 +1,15 @@
+// apiService.js
 import { API_CONFIG } from '../config/constants.js';
-
-const BASE_URL = API_CONFIG.BASE_URL;
 
 class APIService {
   constructor() {
     this.baseURL = API_CONFIG.BACKEND_URL;
+    console.log('🌐 API BASE URL:', this.baseURL);
   }
-
-  /* =========================
-     CAMPAIGNS
-  ========================== */
 
   async getCampaigns() {
     const response = await fetch(`${this.baseURL}/campaigns`);
-
-    if (!response.ok) {
-      throw new Error('Error al obtener campañas');
-    }
-
+    if (!response.ok) throw new Error('Error al obtener campañas');
     return response.json();
   }
 
@@ -29,7 +21,9 @@ class APIService {
       date_end: campaign.dateEnd || null
     };
 
-    const res = await fetch(`${BASE_URL}/campaigns`, {
+    console.log('📤 Payload enviado:', payload);
+
+    const res = await fetch(`${this.baseURL}/campaigns`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -40,13 +34,8 @@ class APIService {
       throw new Error(err);
     }
 
-    return await res.json();
+    return res.json();
   }
-
-
-  /* =========================
-     RESPONSES (queda para luego)
-  ========================== */
 
   async submitResponse(responseData) {
     const response = await fetch(`${this.baseURL}/responses`, {
@@ -61,13 +50,6 @@ class APIService {
     }
 
     return response.json();
-  }
-
-  handleError(error) {
-    if (error.message.includes('Failed to fetch')) {
-      return 'Error de conexión. Verifica tu conexión a internet.';
-    }
-    return error.message || 'Error desconocido';
   }
 }
 
