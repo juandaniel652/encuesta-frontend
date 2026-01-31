@@ -1,6 +1,6 @@
-const BASE_URL = 'https://backend-encuesta-cb7k.onrender.com/api';
-
 import { API_CONFIG } from '../config/constants.js';
+
+const BASE_URL = API_CONFIG.BASE_URL;
 
 class APIService {
   constructor() {
