@@ -19,20 +19,28 @@ class APIService {
     return response.json();
   }
 
-  async createCampaign(campaignData) {
-    const response = await fetch(`${this.baseURL}/campaigns`, {
+  async createCampaign(campaign) {
+    const payload = {
+      name: campaign.name,
+      client_type: campaign.clientType,
+      date_start: campaign.dateStart,
+      date_end: campaign.dateEnd || null
+    };
+  
+    const res = await fetch(`${BASE_URL}/campaigns`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(campaignData)
+      body: JSON.stringify(payload)
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText);
+  
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
     }
-
-    return response.json();
+  
+    return await res.json();
   }
+
 
   /* =========================
      RESPONSES (queda para luego)
