@@ -9,7 +9,7 @@ import { AppController } from './controllers/AppController.js';
 /**
  * Inicializa la aplicación modular
  */
-function initModularApp() {
+export default function initModularApp() {
   // Verificar que los elementos del DOM existan
   if (!document.getElementById('campaignList')) {
     console.error('Elementos del DOM no encontrados. Verifica que el HTML esté cargado.');
