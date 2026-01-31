@@ -2,7 +2,7 @@
  * Application Controller
  * Controlador principal que coordina toda la lógica de la aplicación
  */
-console.log("BODY RECIBIDO:", req.body);
+
 
 
 import { apiService } from '../services/apiService.js';
