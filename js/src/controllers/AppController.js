@@ -2,6 +2,8 @@
  * Application Controller
  * Controlador principal que coordina toda la lógica de la aplicación
  */
+console.log("BODY RECIBIDO:", req.body);
+
 
 import { apiService } from '../services/apiService.js';
 import { Campaign } from '../models/Campaign.js';
@@ -134,7 +136,7 @@ export class AppController {
         clientType,
         dateStart: new Date().toISOString()
       });
-    
+
       const created = await apiService.createCampaign(newCampaign.toJSON());
       await this.loadData();
       this.selectedCampaignId = created.id;
@@ -149,7 +151,16 @@ export class AppController {
     if (!campaign) return;
 
     campaign.update(updates);
-    await apiService.createCampaign(campaign.toJSON());
+    const payload = {
+      id: campaign.id,
+      name: campaign.name,
+      client_type: campaign.clientType,
+      date_start: campaign.dateStart,
+      date_end: campaign.dateEnd
+    };
+
+    await apiService.createCampaign(payload);
+
     await this.loadData();
     this.render();
     alert('Campaña guardada en backend.');
