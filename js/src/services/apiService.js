@@ -1,3 +1,5 @@
+const BASE_URL = 'https://backend-encuesta-cb7k.onrender.com/api';
+
 import { API_CONFIG } from '../config/constants.js';
 
 class APIService {
@@ -26,18 +28,18 @@ class APIService {
       date_start: campaign.dateStart,
       date_end: campaign.dateEnd || null
     };
-  
+
     const res = await fetch(`${BASE_URL}/campaigns`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-  
+
     if (!res.ok) {
       const err = await res.text();
       throw new Error(err);
     }
-  
+
     return await res.json();
   }
 
