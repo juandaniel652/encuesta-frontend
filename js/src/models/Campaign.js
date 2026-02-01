@@ -2,7 +2,7 @@ import { CLIENT_TYPES } from '../config/constants.js';
 
 export class Campaign {
   constructor(data = {}) {
-    this.id = data.id || null; // backend genera el id
+    this.id = data.id || null;
     this.name = data.name || 'Campaña sin nombre';
 
     this.clientType =
@@ -21,9 +21,9 @@ export class Campaign {
       null;
 
     this.questions = data.questions || [];
+    this.updatedAt = data.updatedAt || null;
   }
 
-  // 🔹 ESTE MÉTODO ES EL QUE TE FALTABA
   addQuestion(question) {
     this.questions.push(question);
     this.updatedAt = new Date().toISOString();
@@ -34,6 +34,16 @@ export class Campaign {
     this.updatedAt = new Date().toISOString();
   }
 
+  update(data = {}) {
+    if (data.name !== undefined) this.name = data.name;
+    if (data.clientType !== undefined) this.clientType = data.clientType;
+    if (data.dateStart !== undefined) this.dateStart = data.dateStart;
+    if (data.dateEnd !== undefined) this.dateEnd = data.dateEnd;
+    if (data.questions !== undefined) this.questions = data.questions;
+
+    this.updatedAt = new Date().toISOString();
+  }
+
   static fromJSON(data) {
     return new Campaign({
       id: data.id,
@@ -41,7 +51,8 @@ export class Campaign {
       clientType: data.client_type,
       dateStart: data.date_start,
       dateEnd: data.date_end,
-      questions: data.questions || []
+      questions: data.questions || [],
+      updatedAt: data.updated_at
     });
   }
 }
