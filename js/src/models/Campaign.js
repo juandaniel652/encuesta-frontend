@@ -27,14 +27,14 @@ export class Campaign {
     return new Campaign(json);
   }
 
-  toJSON() {
-    return {
-      id: this.id,
-      name: this.name,
-      clientType: this.clientType,
-      dateStart: this.dateStart,
-      dateEnd: this.dateEnd,
-      questions: this.questions
-    };
+  static fromJSON(data) {
+    return new Campaign({
+      id: data.id,
+      name: data.name,
+      clientType: data.client_type,
+      dateStart: data.date_start,
+      dateEnd: data.date_end,
+      questions: data.questions || []   // 🔑 CLAVE
+    });
   }
 }

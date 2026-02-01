@@ -138,10 +138,12 @@ export class AppController {
       });
 
       const created = await apiService.createCampaign(newCampaign.toJSON());
-      await this.loadData();
-      this.selectedCampaignId = created.id;
+      const campaignInstance = Campaign.fromJSON(created);
+      this.campaigns.push(campaignInstance);
+          
+      this.selectedCampaignId = campaignInstance.id;
       this.render();
-      this.campaignEditorView.render(Campaign.fromJSON(created));
+      this.campaignEditorView.render(campaignInstance);
     });
   }
 
