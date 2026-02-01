@@ -23,8 +23,15 @@ export class Campaign {
     this.questions = data.questions || [];
   }
 
-  static fromJSON(json) {
-    return new Campaign(json);
+  // 🔹 ESTE MÉTODO ES EL QUE TE FALTABA
+  addQuestion(question) {
+    this.questions.push(question);
+    this.updatedAt = new Date().toISOString();
+  }
+
+  removeQuestion(questionId) {
+    this.questions = this.questions.filter(q => q.id !== questionId);
+    this.updatedAt = new Date().toISOString();
   }
 
   static fromJSON(data) {
@@ -34,7 +41,7 @@ export class Campaign {
       clientType: data.client_type,
       dateStart: data.date_start,
       dateEnd: data.date_end,
-      questions: data.questions || []   // 🔑 CLAVE
+      questions: data.questions || []
     });
   }
 }

@@ -140,7 +140,7 @@ export class AppController {
       const created = await apiService.createCampaign(newCampaign.toJSON());
       const campaignInstance = Campaign.fromJSON(created);
       this.campaigns.push(campaignInstance);
-          
+
       this.selectedCampaignId = campaignInstance.id;
       this.render();
       this.campaignEditorView.render(campaignInstance);
@@ -190,9 +190,15 @@ export class AppController {
   handleAddQuestion(campaignId) {
     const campaign = this.campaigns.find(c => c.id === campaignId);
     if (!campaign) return;
-
+    
+    // Forzar que sea instancia real
+    if (!(campaign instanceof Campaign)) {
+      console.error('NO ES INSTANCIA Campaign:', campaign);
+      return;
+    }
+  
     const newQuestion = new Question();
-    campaign.addQuestion(newQuestion.toJSON());
+    campaign.addQuestion(newQuestion);
     this.campaignEditorView.render(campaign);
   }
 
