@@ -3,7 +3,7 @@
  * Vista para completar encuestas de campaña
  */
 
-import { escapeHtml, generateUID } from '../utils/helpers.js';
+import { escapeHtml} from '../utils/helpers.js';
 import { Response } from '../models/Response.js';
 import { apiService } from '../services/apiService.js';
 
@@ -98,7 +98,6 @@ export class CampaignRunnerView {
    * @private
    */
   _createOptionElement(question, option) {
-    const id = generateUID('r');
     const wrapper = document.createElement('label');
     wrapper.className = 'option-item';
 
@@ -218,7 +217,8 @@ export class CampaignRunnerView {
         }
       }
 
-      response.addAnswer(question.id, selectedValue);
+      response.addAnswer(question.backend_id, selectedValue);
+
     });
 
     return response.toJSON();
