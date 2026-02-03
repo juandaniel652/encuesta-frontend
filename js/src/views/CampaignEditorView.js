@@ -284,18 +284,26 @@ export class CampaignEditorView {
     const name = document.getElementById('campName').value.trim();
     const start = document.getElementById('campStart').value;
     const end = document.getElementById('campEnd').value;
+    const clientType = document.getElementById('campClientType')?.value;
 
     if (!name) {
       alert('El nombre es obligatorio.');
       return;
     }
 
+    if (!clientType) {
+      alert('El tipo de cliente es obligatorio.');
+      return
+    }
+
     const updates = {
       name,
-      dateStart: start ? new Date(start).toISOString() : null,
-      dateEnd: end ? new Date(end).toISOString() : null
+      client_type: clientType,
+      date_start: start ? new Date(start).toISOString() : null,
+      date_end: end ? new Date(end).toISOString() : null
     };
 
+    console.log("Payload real:", updates);
     this.callbacks.onSave(campaign.id, updates);
   }
 }
