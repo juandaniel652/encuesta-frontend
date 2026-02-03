@@ -209,6 +209,8 @@ export class CampaignRunnerView {
       const elements = document.getElementsByName('q_' + question.id);
       const selectedValue = [];
 
+      console.log("Preguntas:", campaign.questions);
+
       for (const element of elements) {
         if (element.checked) {
           selectedValue.push(element.value);
