@@ -103,7 +103,7 @@ export class CampaignRunnerView {
 
     const input = document.createElement('input');
     input.type = 'radio';
-    input.name = 'q_' + question.backend_id;
+    input.name = 'q_' + question.id;
     input.value = option;
 
     const span = document.createElement('span');
@@ -216,7 +216,7 @@ export class CampaignRunnerView {
         }
       }
 
-      response.addAnswer(question.backend_id, selectedValue);
+      response.addAnswer(question.id, selectedValue);
 
     });
 
