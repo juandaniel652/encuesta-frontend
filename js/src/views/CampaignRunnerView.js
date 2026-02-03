@@ -103,7 +103,7 @@ export class CampaignRunnerView {
 
     const input = document.createElement('input');
     input.type = 'radio';
-    input.name = 'q_' + question.id;
+    input.name = 'q_' + question.backend_id;
     input.value = option;
 
     const span = document.createElement('span');
