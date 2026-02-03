@@ -3,11 +3,6 @@
  * Centraliza todas las constantes de la aplicación
  */
 
-export const STORAGE_KEYS = {
-  CAMPAIGNS: 'andros_campaigns_v1',
-  RESPONSES: 'andros_responses_v1'
-};
-
 export const API_CONFIG = {
   // La URL base se toma de window.__API_BASE__ definida en index.html
   // Fallback a la URL por defecto si no está definida
