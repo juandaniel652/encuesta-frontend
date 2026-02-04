@@ -204,6 +204,8 @@ export class CampaignRunnerView {
     });
 
     console.log("ID real:", campaign.id);
+    console.log("IDs de preguntas:", campaign.questions.map(q => q.id));
+
 
     campaign.questions.forEach(question => {
       const elements = document.getElementsByName('q_' + question.id);
