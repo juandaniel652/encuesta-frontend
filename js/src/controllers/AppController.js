@@ -164,18 +164,18 @@ export class AppController {
     // guardar preguntas
     for (let i = 0; i < campaign.questions.length; i++) {
       const q = campaign.questions[i];
-    
+
       const savedQuestion = await apiService.createQuestion({
         campaign_id: savedCampaign.id,
         text: q.text,
         type: q.type,
         position: i
       });
-    
+
       // 🔑 reemplazás el id fake por UUID real
       q.id = savedQuestion.id;
     }
-  
+
     await this.loadData();
     this.render();
   }
@@ -187,16 +187,23 @@ export class AppController {
 
   // DUPLICAR → CREA NUEVA EN BACKEND
   async handleCampaignDuplicate(campaignId) {
-    const campaign = this.campaigns.find(c => c.id === campaignId);
-    if (!campaign) return;
-
-    const duplicate = campaign.duplicate();
+    const original = this.campaigns.find(c => c.id === campaignId);
+    if (!original) return;
+    
+    const duplicate = original.duplicate();
+    
+    // Crear en backend
     const created = await apiService.createCampaign(duplicate.toJSON());
+    
+    // Regla de oro
     await this.loadData();
     this.selectedCampaignId = created.id;
+    
+    const campaign = this.getSelectedCampaign();
     this.render();
-    this.campaignEditorView.render(Campaign.fromJSON(created));
+    this.campaignEditorView.render(campaign);
   }
+
 
   // AGREGAR PREGUNTA (luego guardar)
   handleAddQuestion(campaignId) {
