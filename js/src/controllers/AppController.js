@@ -161,11 +161,23 @@ export class AppController {
       date_end: campaign.dateEnd
     };
 
-    await apiService.createCampaign(payload);
-
+    // guardar preguntas
+    for (let i = 0; i < campaign.questions.length; i++) {
+      const q = campaign.questions[i];
+    
+      const savedQuestion = await apiService.createQuestion({
+        campaign_id: savedCampaign.id,
+        text: q.text,
+        type: q.type,
+        position: i
+      });
+    
+      // 🔑 reemplazás el id fake por UUID real
+      q.id = savedQuestion.id;
+    }
+  
     await this.loadData();
     this.render();
-    alert('Campaña guardada en backend.');
   }
 
   // ELIMINAR (cuando implementes endpoint DELETE)
