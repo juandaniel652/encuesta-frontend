@@ -44,15 +44,22 @@ export class Campaign {
     this.updatedAt = new Date().toISOString();
   }
 
-  static fromJSON(data) {
-    return new Campaign({
-      id: data.id,
-      name: data.name,
-      clientType: data.client_type,
-      dateStart: data.date_start,
-      dateEnd: data.date_end,
-      questions: data.questions || [],
-      updatedAt: data.updated_at
-    });
-  }
+  // models/Campaign.js
+static fromJSON(data) {
+  return new Campaign({
+    id: data.id,
+    name: data.name,
+    clientType: data.client_type,
+    dateStart: data.date_start,
+    dateEnd: data.date_end,
+    questions: (data.questions || []).map(q => ({
+      id: q.id,
+      text: q.text,
+      type: q.type,
+      options: q.question_options.map(o => o.text)
+    })),
+    updatedAt: data.updated_at
+  });
+}
+
 }

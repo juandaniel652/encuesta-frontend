@@ -51,6 +51,20 @@ class APIService {
 
     return response.json();
   }
+
+  // apiService.js
+  async createQuestionOption(option) {
+    const res = await fetch(`${this.baseURL}/question-options`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(option)
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+
 }
 
 export const apiService = new APIService();
