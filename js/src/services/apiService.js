@@ -14,15 +14,11 @@ class APIService {
   }
 
   async getCampaignById(id) {
-    const res = await fetch(`${this.baseURL}/campaigns/${id}`);
-    
-    if (!res.ok) {
-      throw new Error('Error al obtener campaña por id');
-    }
-    console.log("CAMPAÑA REAL DESDE BACKEND:", campaign);
-
-    return res.json();
+    const response = await fetch(`${this.baseURL}/campaigns/${id}`);
+    if (!response.ok) throw new Error('Error al obtener campaña por id');
+    return response.json();   // ✅ esto sí existe
   }
+
 
 
   async createCampaign(campaign) {
