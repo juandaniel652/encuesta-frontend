@@ -239,6 +239,16 @@ export class AppController {
   handleRunCampaign() {
     const campaign = this.getSelectedCampaign();
     if (!campaign) return;
+  
+    const hasFakeIds = campaign.questions.some(q =>
+      typeof q.id === 'string' && q.id.startsWith('q_')
+    );
+  
+    if (hasFakeIds) {
+      alert('Tenés que guardar la campaña antes de ejecutarla.');
+      return;
+    }
+  
     this.campaignRunnerView.render(campaign);
   }
 
