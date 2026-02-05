@@ -245,13 +245,24 @@ export class AppController {
     const selected = this.getSelectedCampaign();
     if (!selected) return;
     
-    // 🔑 fuente de verdad
-    const campaign = await apiService.getCampaignById(selected.id);
+    // backend real
+    const raw = await apiService.getCampaignById(selected.id);
     
-    console.log("CAMPAÑA REAL DESDE BACKEND:", campaign);
+    // normalizar a modelo
+    const campaign = Campaign.fromJSON(raw);
     
+    // 🔑 actualizar fuente de verdad
+    const index = this.campaigns.findIndex(c => c.id === campaign.id);
+    if (index !== -1) {
+      this.campaigns[index] = campaign;
+    }
+  
+    this.selectedCampaignId = campaign.id;
+  
+    console.log("CAMPAÑA REAL NORMALIZADA:", campaign);
     this.campaignRunnerView.render(campaign);
   }
+
 
 
   // ENVIAR RESPUESTA → BACKEND
