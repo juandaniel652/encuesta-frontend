@@ -2,15 +2,12 @@
  * Response Model
  * Define la estructura de una respuesta de encuesta
  */
-
-import { generateUID } from '../utils/helpers.js';
-
 /**
  * Clase que representa una Respuesta de encuesta
  */
 export class Response {
   constructor(data = {}) {
-    this.id = data.id || generateUID('resp');
+    this.id = data.id || null;
     this.campaignId = data.campaignId || null;
     this.clientNumber = data.clientNumber || '';
     this.clientName = data.clientName || '';

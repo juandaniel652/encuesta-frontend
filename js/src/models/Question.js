@@ -3,7 +3,6 @@
  * Define la estructura y operaciones de una pregunta
  */
 
-import { generateUID } from '../utils/helpers.js';
 import { QUESTION_TYPES } from '../config/constants.js';
 
 /**
