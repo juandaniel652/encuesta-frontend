@@ -13,6 +13,18 @@ class APIService {
     return response.json();
   }
 
+  async getCampaignById(id) {
+    const res = await fetch(`${this.baseURL}/campaigns/${id}`);
+    
+    if (!res.ok) {
+      throw new Error('Error al obtener campaña por id');
+    }
+    console.log("CAMPAÑA REAL DESDE BACKEND:", campaign);
+
+    return res.json();
+  }
+
+
   async createCampaign(campaign) {
     const payload = {
       name: campaign.name,
