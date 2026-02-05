@@ -125,8 +125,13 @@ export class AppController {
     this.selectedCampaignId = campaignId;
     const campaign = this.getSelectedCampaign();
     this.render();
-    if (campaign) this.campaignEditorView.render(campaign);
+    
+    // Solo render editor si NO estoy ejecutando
+    if (campaign && this.campaignEditorView) {
+      this.campaignEditorView.render(campaign);
+    }
   }
+
 
   // CREAR CAMPAÑA → BACKEND DIRECTO
   async handleNewCampaign() {
@@ -239,18 +244,15 @@ export class AppController {
   handleRunCampaign() {
     const campaign = this.getSelectedCampaign();
     if (!campaign) return;
-  
-    const hasFakeIds = campaign.questions.some(q =>
-      typeof q.id === 'string' && q.id.startsWith('q_')
-    );
-  
-    if (hasFakeIds) {
-      alert('Tenés que guardar la campaña antes de ejecutarla.');
-      return;
-    }
-  
+
+    console.log("ENTRO A EJECUTAR", campaign);
+
+    // 🔑 Evitar que el editor vuelva a renderizar
+    this.campaignEditorView = null;
+
     this.campaignRunnerView.render(campaign);
   }
+
 
   // ENVIAR RESPUESTA → BACKEND
   async handleResponseSubmit(response) {
