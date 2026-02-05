@@ -10,7 +10,7 @@ import { QUESTION_TYPES } from '../config/constants.js';
  */
 export class Question {
   constructor(data = {}) {
-    this.id = data.id || generateUID('q');
+    this.id = data.id || null;
     this.text = data.text || 'Nueva pregunta';
     this.type = data.type || QUESTION_TYPES.SINGLE;
     this.options = data.options || ['Opción 1', 'Opción 2'];
