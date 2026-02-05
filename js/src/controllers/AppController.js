@@ -166,7 +166,7 @@ export class AppController {
       const q = campaign.questions[i];
 
       const savedQuestion = await apiService.createQuestion({
-        campaign_id: savedCampaign.id,
+        campaign_id: campaign.id,
         text: q.text,
         type: q.type,
         position: i
