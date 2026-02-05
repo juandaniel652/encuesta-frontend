@@ -125,7 +125,7 @@ export class AppController {
     this.selectedCampaignId = campaignId;
     const campaign = this.getSelectedCampaign();
     this.render();
-    
+
     // Solo render editor si NO estoy ejecutando
     if (campaign && this.campaignEditorView) {
       this.campaignEditorView.render(campaign);
@@ -241,15 +241,15 @@ export class AppController {
   }
 
   // EJECUTAR
-  handleRunCampaign() {
-    const campaign = this.getSelectedCampaign();
-    if (!campaign) return;
-
-    console.log("ENTRO A EJECUTAR", campaign);
-
-    // 🔑 Evitar que el editor vuelva a renderizar
-    this.campaignEditorView = null;
-
+  async handleRunCampaign() {
+    const selected = this.getSelectedCampaign();
+    if (!selected) return;
+    
+    // 🔑 fuente de verdad
+    const campaign = await apiService.getCampaignById(selected.id);
+    
+    console.log("CAMPAÑA REAL DESDE BACKEND:", campaign);
+    
     this.campaignRunnerView.render(campaign);
   }
 
