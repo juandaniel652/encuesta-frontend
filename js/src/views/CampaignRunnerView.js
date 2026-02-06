@@ -104,7 +104,7 @@ export class CampaignRunnerView {
   const input = document.createElement('input');
   input.type = 'radio';
   input.name = 'q_' + question.id;
-  input.value = option.id;          // ← ID real
+  input.value = option.text;          // ← ID real
 
   const span = document.createElement('span');
   span.textContent = option.text;   // ← TEXTO real
@@ -198,26 +198,26 @@ export class CampaignRunnerView {
    * @private
    */
   _createResponse(campaign, clientNumber, clientName) {
-    const response = new Response({
-      campaignId: campaign.id,
-      clientNumber,
-      clientName
-    });
-  
-    campaign.questions.forEach(question => {
-      const elements = document.getElementsByName('q_' + question.id);
-      let selectedValue = null;
-    
-      for (const element of elements) {
-        if (element.checked) {
-          selectedValue = element.value;
-          break;
-        }
+  const response = new Response({
+    campaignId: campaign.id,
+    clientNumber,
+    clientName
+  });
+
+  campaign.questions.forEach(question => {
+    const elements = document.getElementsByName('q_' + question.id);
+    let selectedValue = null;
+
+    for (const element of elements) {
+      if (element.checked) {
+        selectedValue = element.value;
+        break;
       }
-    
-      response.addAnswer(question.id, selectedValue);
-    });
-  
-    return response.toJSON();
-  }
+    }
+
+    response.addAnswer(question.id, selectedValue);
+  });
+
+  return response.toJSON();
+}
 }
