@@ -204,17 +204,21 @@ export class CampaignRunnerView {
   });
 
   campaign.questions.forEach(question => {
-    const selected = document.querySelector(
-      `input[name="q_${question.id}"]:checked`
-    );
+    const elements = document.getElementsByName('q_' + question.id);
 
-    if (!selected) {
-      throw new Error('Pregunta sin respuesta: ' + question.text);
+    let selectedText = null;
+
+    for (const element of elements) {
+      if (element.checked) {
+        selectedText = element.value; // ya es texto
+        break;
+      }
     }
 
-    response.addAnswer(question.id, [selected.value]);
+    response.addAnswer(question.id, selectedText);
   });
 
+  console.log("PAYLOAD FINAL:", response.toJSON());
   return response.toJSON();
 }
 

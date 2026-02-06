@@ -20,10 +20,10 @@ export class Response {
    * @param {string} questionId - ID de la pregunta
    * @param {Array<string>} response - Respuestas seleccionadas
    */
-  addAnswer(questionId, response) {
+  addAnswer(questionId, optionText) {
     this.answers.push({
       questionId,
-      response
+      option_text: optionText
     });
   }
 
