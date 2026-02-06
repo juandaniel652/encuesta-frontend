@@ -284,7 +284,8 @@ export class CampaignEditorView {
     const name = document.getElementById('campName').value.trim();
     const start = document.getElementById('campStart').value;
     const end = document.getElementById('campEnd').value;
-    const clientType = document.getElementById('campClientType')?.value;
+    const clientType = campaign.clientType;
+
 
     if (!name) {
       alert('El nombre es obligatorio.');
