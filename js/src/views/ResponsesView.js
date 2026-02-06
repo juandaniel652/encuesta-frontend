@@ -92,8 +92,8 @@ export class ResponsesView {
     // Renderizar cada opción
     question.options.forEach(option => {
       const optionRow = this._createOptionRow(
-        option, 
-        optionCounts[option], 
+        option.text,
+        optionCounts[option.id],
         totalResponses
       );
       block.appendChild(optionRow.row);
@@ -108,28 +108,28 @@ export class ResponsesView {
    * @private
    */
   _countResponsesByOption(question, responses) {
-    const counts = {};
-    
-    question.options.forEach(option => {
-      counts[option] = [];
-    });
+  const counts = {};
 
-    responses.forEach(response => {
-      const answer = response.answers.find(a => a.questionId === question.id);
-      if (answer && answer.response && answer.response.length > 0) {
-        const selectedOption = answer.response[0];
-        if (counts[selectedOption]) {
-          counts[selectedOption].push({
-            clientName: response.clientName,
-            clientNumber: response.clientNumber,
-            date: response.createdAt
-          });
-        }
+  question.options.forEach(option => {
+    counts[option.id] = [];
+  });
+
+  responses.forEach(response => {
+    const answer = response.answers.find(a => a.questionId === question.id);
+    if (answer && answer.response && answer.response.length > 0) {
+      const selectedOptionId = answer.response[0];
+      if (counts[selectedOptionId]) {
+        counts[selectedOptionId].push({
+          clientName: response.clientName,
+          clientNumber: response.clientNumber,
+          date: response.createdAt
+        });
       }
-    });
+    }
+  });
 
-    return counts;
-  }
+  return counts;
+}
 
   /**
    * Crea una fila de opción con estadísticas
@@ -188,7 +188,8 @@ export class ResponsesView {
     `;
 
     const label = document.createElement('span');
-    label.textContent = option;
+    label.textContent = option.text;
+
     label.style.fontWeight = '500';
 
     const barContainer = document.createElement('div');

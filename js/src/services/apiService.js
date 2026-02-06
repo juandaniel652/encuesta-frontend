@@ -92,9 +92,21 @@ class APIService {
     const res = await fetch(`${this.baseURL}/questions/${id}`, {
       method: 'DELETE'
     });
-  
+
     if (!res.ok) throw new Error(await res.text());
   }
+
+  async updateCampaign(id, payload) {
+    const res = await fetch(`${this.baseURL}/campaigns/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
 
 
 
