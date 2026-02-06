@@ -188,7 +188,7 @@ export class ResponsesView {
     `;
 
     const label = document.createElement('span');
-    label.textContent = option.text;
+    label.textContent = option;
 
     label.style.fontWeight = '500';
 
