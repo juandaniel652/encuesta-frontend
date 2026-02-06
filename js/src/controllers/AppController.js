@@ -170,6 +170,9 @@ export class AppController {
     for (let i = 0; i < campaign.questions.length; i++) {
       const q = campaign.questions[i];
 
+      if (!campaign.id) throw new Error('Campaign ID inválido al guardar pregunta');
+
+
       const savedQuestion = await apiService.createQuestion({
         campaign_id: campaign.id,
         text: q.text,

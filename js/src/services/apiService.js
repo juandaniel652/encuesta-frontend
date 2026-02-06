@@ -72,6 +72,18 @@ class APIService {
     return res.json();
   }
 
+  async createQuestion(question) {
+    const res = await fetch(`${this.baseURL}/questions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(question)
+    });
+  
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+
 
 }
 
