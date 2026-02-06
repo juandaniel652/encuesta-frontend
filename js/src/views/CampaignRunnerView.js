@@ -104,17 +104,16 @@ export class CampaignRunnerView {
   const input = document.createElement('input');
   input.type = 'radio';
   input.name = 'q_' + question.id;
-  input.value = option.text;          // ← ID real
+  input.value = option.text;   // ← TEXTO, no ID
 
   const span = document.createElement('span');
-  span.textContent = option.text;   // ← TEXTO real
+  span.textContent = option.text;
 
   wrapper.appendChild(input);
   wrapper.appendChild(span);
 
   return wrapper;
 }
-
 
   /**
    * Maneja el envío del formulario
