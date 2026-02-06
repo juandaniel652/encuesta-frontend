@@ -216,7 +216,7 @@ export class CampaignRunnerView {
 
       for (const element of elements) {
         if (element.checked) {
-          selectedValue.push(element.value);
+          selectedValue.push(option.id);
           break;
         }
       }

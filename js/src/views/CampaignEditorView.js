@@ -261,7 +261,7 @@ export class CampaignEditorView {
       `;
 
       row.querySelector('.btn-del-opt').addEventListener('click', () => {
-        if (!confirm('¿Eliminar opción?')) return;
+        
         question.options.splice(index, 1);
         this.callbacks.onQuestionUpdate(campaign.id);
         this._renderQuestionOptions(question, campaign, container);

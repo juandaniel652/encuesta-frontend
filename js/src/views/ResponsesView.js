@@ -275,7 +275,7 @@ export class ResponsesView {
         margin-bottom: 8px;
         font-size: 13px;
       `;
-      title.textContent = `Clientes que eligieron ""${option.text}":`;
+      title.textContent = `Clientes que eligieron "${option.text}":`;
       details.appendChild(title);
 
       clients.forEach(client => {
