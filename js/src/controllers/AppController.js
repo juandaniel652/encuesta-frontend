@@ -138,9 +138,14 @@ export class AppController {
     this.campaignEditorView.renderClientTypeSelection(async (clientType) => {
       const newCampaign = new Campaign({
         name: 'Nueva campaña',
-        clientType,
+        clientType: clientType|| 'without_clients',
         dateStart: new Date().toISOString()
       });
+
+      if (!clientType) {
+        alert('Debés seleccionar un tipo de cliente antes de guardar.');
+        return;
+      }
 
       const created = await apiService.createCampaign(newCampaign.toJSON());
       const campaignInstance = Campaign.fromJSON(created);
