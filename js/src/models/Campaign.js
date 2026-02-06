@@ -56,11 +56,15 @@ static fromJSON(data) {
       id: q.id,
       text: q.text,
       type: q.type,
-      options: q.question_options.map(o => o.text)
+      options: (q.question_options || []).map(o => ({
+        id: o.id,
+        text: o.text
+      }))
     })),
     updatedAt: data.updated_at
   });
 }
+
 
 toJSON() {
   return {
