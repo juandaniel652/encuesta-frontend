@@ -167,14 +167,17 @@ export class AppController {
     // guardar preguntas
     for (let i = 0; i < campaign.questions.length; i++) {
       const q = campaign.questions[i];
-    
+      
+      console.log("GUARDANDO PREGUNTA:", q);
       const savedQuestion = await apiService.createQuestion({
         campaign_id: campaign.id,
         text: q.text,
         type: q.type,
         position: i
       });
-    
+      
+      console.log("RESPUESTA BACKEND:", savedQuestion);
+      
       // reemplazás el id fake por UUID real del backend
       q.id = savedQuestion.id;
     }
