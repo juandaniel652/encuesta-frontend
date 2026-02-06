@@ -12,6 +12,7 @@ import { CampaignListView } from '../views/CampaignListView.js';
 import { CampaignEditorView } from '../views/CampaignEditorView.js';
 import { CampaignRunnerView } from '../views/CampaignRunnerView.js';
 import { ResponsesView } from '../views/ResponsesView.js';
+import { CLIENT_TYPES } from '../config/constants.js';
 
 export class AppController {
   constructor() {
@@ -139,7 +140,7 @@ export class AppController {
       name: 'Campaña sin nombre',
       clientType: CLIENT_TYPES.WITHOUT_CLIENTS // asegurar valor
     });
-  
+
     apiService.createCampaign(newCampaign)
       .then(res => {
         console.log('Campaña creada:', res);
