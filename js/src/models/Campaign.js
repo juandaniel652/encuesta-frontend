@@ -70,7 +70,7 @@ toJSON() {
   return {
     id: this.id,
     name: this.name,
-    clientType: this.clientType,
+    clientType: this.client_type,
     dateStart: this.dateStart,
     dateEnd: this.dateEnd,
     questions: this.questions.map((q, index) => ({
