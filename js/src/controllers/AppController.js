@@ -136,11 +136,11 @@ export class AppController {
   // CREAR CAMPAÑA → BACKEND DIRECTO
   async handleNewCampaign() {
     const newCampaign = new Campaign(formData);
-    
+
     // 1. Creo la campaña
     const savedCampaign = await apiService.createCampaign(newCampaign.toJSON());
     const campaign = Campaign.fromJSON(savedCampaign);
-    
+
     // 2. Ahora sí: persisto las preguntas
     for (const question of newCampaign.questions) {
       await apiService.createQuestion({
@@ -151,38 +151,46 @@ export class AppController {
         options: question.options || []
       });
     }
-  
+
     this.currentCampaign = campaign;
   }
 
   // GUARDAR CAMPAÑA → BACKEND
+  // AppController.js
   async handleCampaignSave(campaignId, updates) {
     const campaign = this.campaigns.find(c => c.id === campaignId);
     if (!campaign) return;
-    
+
     campaign.update(updates);
-    
-    // guardar preguntas
+
     for (let i = 0; i < campaign.questions.length; i++) {
       const q = campaign.questions[i];
-      
-      console.log("GUARDANDO PREGUNTA:", q);
-      const savedQuestion = await apiService.createQuestion({
-        campaign_id: campaign.id,
-        text: q.text,
-        type: q.type,
-        position: i
-      });
-      
-      console.log("RESPUESTA BACKEND:", savedQuestion);
 
-      // reemplazás el id fake por UUID real del backend
-      q.id = savedQuestion.id;
+      // 1. Crear pregunta solo si es nueva
+      if (!q.id) {
+        const savedQuestion = await apiService.createQuestion({
+          campaign_id: campaign.id,
+          text: q.text,
+          type: q.type,
+          position: i
+        });
+
+        q.id = savedQuestion.id;
+      }
+
+      // 2. CREAR OPCIONES
+      for (const opt of q.options) {
+        await apiService.createQuestionOption({
+          question_id: q.id,
+          text: opt
+        });
+      }
     }
-  
+
     await this.loadData();
     this.render();
-  }
+}
+
 
   // ELIMINAR (cuando implementes endpoint DELETE)
   async handleCampaignDelete(campaignId) {
@@ -229,15 +237,18 @@ export class AppController {
     // se guarda cuando tocan "Guardar campaña"
   }
 
-  handleQuestionDelete(campaignId, questionId) {
+  async handleQuestionDelete(campaignId, questionId) {
     if (!confirm('¿Eliminar pregunta?')) return;
-
+    
+    await apiService.deleteQuestion(questionId);
+    
     const campaign = this.campaigns.find(c => c.id === campaignId);
     if (!campaign) return;
-
+    
     campaign.removeQuestion(questionId);
     this.campaignEditorView.render(campaign);
   }
+
 
   // EJECUTAR
   async handleRunCampaign() {

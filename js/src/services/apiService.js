@@ -87,6 +87,15 @@ class APIService {
     return res.json();
   }
 
+  
+  async deleteQuestion(id) {
+    const res = await fetch(`${this.baseURL}/questions/${id}`, {
+      method: 'DELETE'
+    });
+  
+    if (!res.ok) throw new Error(await res.text());
+  }
+
 
 
 
