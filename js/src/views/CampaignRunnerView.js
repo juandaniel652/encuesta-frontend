@@ -197,7 +197,7 @@ export class CampaignRunnerView {
    * Crea el objeto de respuesta
    * @private
    */
-  _createResponse(campaign, clientNumber, clientName) {
+ _createResponse(campaign, clientNumber, clientName) {
   const response = new Response({
     campaignId: campaign.id,
     clientNumber,
@@ -205,19 +205,18 @@ export class CampaignRunnerView {
   });
 
   campaign.questions.forEach(question => {
-    const elements = document.getElementsByName('q_' + question.id);
-    let selectedValue = null;
+    const selected = document.querySelector(
+      `input[name="q_${question.id}"]:checked`
+    );
 
-    for (const element of elements) {
-      if (element.checked) {
-        selectedValue = element.value;
-        break;
-      }
+    if (!selected) {
+      throw new Error('Pregunta sin respuesta: ' + question.text);
     }
 
-    response.addAnswer(question.id, selectedValue);
+    response.addAnswer(question.id, [selected.value]);
   });
 
   return response.toJSON();
 }
+
 }
