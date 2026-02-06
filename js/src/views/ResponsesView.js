@@ -92,7 +92,7 @@ export class ResponsesView {
     // Renderizar cada opción
     question.options.forEach(option => {
       const optionRow = this._createOptionRow(
-        option.text,
+        option,
         optionCounts[option.id],
         totalResponses
       );
@@ -188,7 +188,7 @@ export class ResponsesView {
     `;
 
     const label = document.createElement('span');
-    label.textContent = option;
+    label.textContent = option.text;
 
     label.style.fontWeight = '500';
 
@@ -275,7 +275,7 @@ export class ResponsesView {
         margin-bottom: 8px;
         font-size: 13px;
       `;
-      title.textContent = `Clientes que eligieron "${option}":`;
+      title.textContent = `Clientes que eligieron ""${option.text}":`;
       details.appendChild(title);
 
       clients.forEach(client => {
