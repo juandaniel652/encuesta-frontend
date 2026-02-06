@@ -161,34 +161,24 @@ export class AppController {
   async handleCampaignSave(campaignId, updates) {
     const campaign = this.campaigns.find(c => c.id === campaignId);
     if (!campaign) return;
-
+    
     campaign.update(updates);
-    const payload = {
-      id: campaign.id,
-      name: campaign.name,
-      client_type: campaign.clientType,
-      date_start: campaign.dateStart,
-      date_end: campaign.dateEnd
-    };
-
+    
     // guardar preguntas
     for (let i = 0; i < campaign.questions.length; i++) {
       const q = campaign.questions[i];
-
-      if (!campaign.id) throw new Error('Campaign ID inválido al guardar pregunta');
-
-
+    
       const savedQuestion = await apiService.createQuestion({
         campaign_id: campaign.id,
         text: q.text,
         type: q.type,
         position: i
       });
-
-      // 🔑 reemplazás el id fake por UUID real
+    
+      // reemplazás el id fake por UUID real del backend
       q.id = savedQuestion.id;
     }
-
+  
     await this.loadData();
     this.render();
   }
