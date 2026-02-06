@@ -135,26 +135,24 @@ export class AppController {
 
   // CREAR CAMPAÑA → BACKEND DIRECTO
   async handleNewCampaign() {
-    this.campaignEditorView.renderClientTypeSelection(async (clientType) => {
-      const newCampaign = new Campaign({
-        name: 'Nueva campaña',
-        clientType: clientType|| 'without_clients',
-        dateStart: new Date().toISOString()
+    const newCampaign = new Campaign(formData);
+    
+    // 1. Creo la campaña
+    const savedCampaign = await apiService.createCampaign(newCampaign.toJSON());
+    const campaign = Campaign.fromJSON(savedCampaign);
+    
+    // 2. Ahora sí: persisto las preguntas
+    for (const question of newCampaign.questions) {
+      await apiService.createQuestion({
+        campaign_id: campaign.id,
+        text: question.text,
+        type: question.type,
+        position: question.position || 0,
+        options: question.options || []
       });
-
-      if (!clientType) {
-        alert('Debés seleccionar un tipo de cliente antes de guardar.');
-        return;
-      }
-
-      const created = await apiService.createCampaign(newCampaign.toJSON());
-      const campaignInstance = Campaign.fromJSON(created);
-      this.campaigns.push(campaignInstance);
-
-      this.selectedCampaignId = campaignInstance.id;
-      this.render();
-      this.campaignEditorView.render(campaignInstance);
-    });
+    }
+  
+    this.currentCampaign = campaign;
   }
 
   // GUARDAR CAMPAÑA → BACKEND
@@ -177,7 +175,7 @@ export class AppController {
       });
       
       console.log("RESPUESTA BACKEND:", savedQuestion);
-      
+
       // reemplazás el id fake por UUID real del backend
       q.id = savedQuestion.id;
     }
