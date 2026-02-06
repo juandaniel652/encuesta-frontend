@@ -34,9 +34,8 @@ export class Response {
    */
   getAnswer(questionId) {
     const answer = this.answers.find(a => a.questionId === questionId);
-    return answer ? answer.response : null;
+    return answer ? answer.option_text : null;
   }
-
   /**
    * Valida que la respuesta esté completa
    * @param {Array} questions - Lista de preguntas de la campaña
