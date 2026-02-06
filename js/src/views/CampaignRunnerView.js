@@ -203,28 +203,21 @@ export class CampaignRunnerView {
       clientNumber,
       clientName
     });
-
-    console.log("ID real:", campaign.id);
-    console.log("IDs de preguntas:", campaign.questions.map(q => q.id));
-
-
+  
     campaign.questions.forEach(question => {
       const elements = document.getElementsByName('q_' + question.id);
-      const selectedValue = [];
-
-      console.log("Preguntas:", campaign.questions);
-
+      let selectedValue = null;
+    
       for (const element of elements) {
         if (element.checked) {
-          selectedValue.push(option.id);
+          selectedValue = element.value;
           break;
         }
       }
-
+    
       response.addAnswer(question.id, selectedValue);
-
     });
-
+  
     return response.toJSON();
   }
 }
