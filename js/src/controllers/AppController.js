@@ -135,7 +135,7 @@ export class AppController {
 
   // CREAR CAMPAÑA → BACKEND DIRECTO
   async handleNewCampaign() {
-    const newCampaign = new Campaign(formData);
+    const newCampaign = new Campaign();
 
     // 1. Creo la campaña
     const savedCampaign = await apiService.createCampaign(newCampaign.toJSON());
@@ -239,12 +239,12 @@ export class AppController {
 
   async handleQuestionDelete(campaignId, questionId) {
     if (!confirm('¿Eliminar pregunta?')) return;
-    
+
     await apiService.deleteQuestion(questionId);
-    
+
     const campaign = this.campaigns.find(c => c.id === campaignId);
     if (!campaign) return;
-    
+
     campaign.removeQuestion(questionId);
     this.campaignEditorView.render(campaign);
   }
