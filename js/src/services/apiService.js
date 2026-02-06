@@ -22,42 +22,21 @@ class APIService {
 
 
   async createCampaign(campaign) {
-    const payload = {
-      name: campaign.name,
-      client_type: campaign.clientType,
-      date_start: campaign.dateStart,
-      date_end: campaign.dateEnd || null
-    };
-
+    const payload = campaign.toJSON();
     console.log('📤 Payload enviado:', payload);
-
+    
     const res = await fetch(`${this.baseURL}/campaigns`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-
+  
     if (!res.ok) {
       const err = await res.text();
       throw new Error(err);
     }
-
+  
     return res.json();
-  }
-
-  async submitResponse(responseData) {
-    const response = await fetch(`${this.baseURL}/responses`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(responseData)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText);
-    }
-
-    return response.json();
   }
 
   // apiService.js
@@ -102,7 +81,7 @@ class APIService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-  
+
     if (!res.ok) throw new Error(await res.text());
     return res.json();
   }

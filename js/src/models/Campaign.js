@@ -69,10 +69,10 @@ static fromJSON(data) {
 toJSON() {
   return {
     id: this.id,
-    name: this.name,
-    clientType: this.client_type,
-    dateStart: this.dateStart,
-    dateEnd: this.dateEnd,
+    name: this.name || 'Campaña sin nombre',
+    client_type: this.clientType || CLIENT_TYPES.WITHOUT_CLIENTS, // 🔹 siempre definido
+    date_start: this.dateStart || new Date().toISOString(),
+    date_end: this.dateEnd || null,
     questions: this.questions.map((q, index) => ({
       id: q.id,
       text: q.text,
@@ -82,6 +82,7 @@ toJSON() {
     }))
   };
 }
+
 
 
 }

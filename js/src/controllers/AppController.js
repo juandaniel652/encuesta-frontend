@@ -134,26 +134,20 @@ export class AppController {
 
 
   // CREAR CAMPAÑA → BACKEND DIRECTO
-  async handleNewCampaign() {
-    const newCampaign = new Campaign();
-
-    // 1. Creo la campaña
-    const savedCampaign = await apiService.createCampaign(newCampaign.toJSON());
-    const campaign = Campaign.fromJSON(savedCampaign);
-
-    // 2. Ahora sí: persisto las preguntas
-    for (const question of newCampaign.questions) {
-      await apiService.createQuestion({
-        campaign_id: campaign.id,
-        text: question.text,
-        type: question.type,
-        position: question.position || 0,
-        options: question.options || []
-      });
-    }
-
-    this.currentCampaign = campaign;
+  handleNewCampaign() {
+    const newCampaign = new Campaign({
+      name: 'Campaña sin nombre',
+      clientType: CLIENT_TYPES.WITHOUT_CLIENTS // asegurar valor
+    });
+  
+    apiService.createCampaign(newCampaign)
+      .then(res => {
+        console.log('Campaña creada:', res);
+        // refrescar lista o UI
+      })
+      .catch(err => console.error(err));
   }
+
 
   // GUARDAR CAMPAÑA → BACKEND
   // AppController.js
