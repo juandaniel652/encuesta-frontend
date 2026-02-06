@@ -62,4 +62,22 @@ static fromJSON(data) {
   });
 }
 
+toJSON() {
+  return {
+    id: this.id,
+    name: this.name,
+    clientType: this.clientType,
+    dateStart: this.dateStart,
+    dateEnd: this.dateEnd,
+    questions: this.questions.map((q, index) => ({
+      id: q.id,
+      text: q.text,
+      type: q.type,
+      position: index,
+      options: q.options || []
+    }))
+  };
+}
+
+
 }

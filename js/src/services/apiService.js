@@ -79,9 +79,14 @@ class APIService {
       body: JSON.stringify(question)
     });
   
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
+    }
+  
     return res.json();
   }
+
 
 
 
