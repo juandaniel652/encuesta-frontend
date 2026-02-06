@@ -98,22 +98,23 @@ export class CampaignRunnerView {
    * @private
    */
   _createOptionElement(question, option) {
-    const wrapper = document.createElement('label');
-    wrapper.className = 'option-item';
+  const wrapper = document.createElement('label');
+  wrapper.className = 'option-item';
 
-    const input = document.createElement('input');
-    input.type = 'radio';
-    input.name = 'q_' + question.id;
-    input.value = option;
+  const input = document.createElement('input');
+  input.type = 'radio';
+  input.name = 'q_' + question.id;
+  input.value = option.id;          // ← ID real
 
-    const span = document.createElement('span');
-    span.textContent = option;
+  const span = document.createElement('span');
+  span.textContent = option.text;   // ← TEXTO real
 
-    wrapper.appendChild(input);
-    wrapper.appendChild(span);
+  wrapper.appendChild(input);
+  wrapper.appendChild(span);
 
-    return wrapper;
-  }
+  return wrapper;
+}
+
 
   /**
    * Maneja el envío del formulario
