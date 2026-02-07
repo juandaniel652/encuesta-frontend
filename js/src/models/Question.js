@@ -1,13 +1,5 @@
-/**
- * Question Model
- * Define la estructura y operaciones de una pregunta
- */
-
 import { QUESTION_TYPES } from '../config/constants.js';
 
-/**
- * Clase que representa una Pregunta
- */
 export class Question {
   constructor(data = {}) {
     this.id = data.id || null;
@@ -27,6 +19,21 @@ export class Question {
     this.options.push({
       id: null,
       text
+    });
+  }
+
+  // 🔑 NECESARIO para Campaign.fromJSON
+  static fromJSON(data) {
+    const rawOptions = data.options || data.question_options || [];
+
+    return new Question({
+      id: data.id,
+      text: data.text,
+      type: data.type,
+      options: rawOptions.map(o => ({
+        id: o.id,
+        text: o.text
+      }))
     });
   }
 }
