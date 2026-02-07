@@ -233,9 +233,7 @@ export class CampaignEditorView {
     });
 
     inner.querySelector('.btn-add-option').addEventListener('click', () => {
-     question.options.push({
-        text: 'Nueva opción'
-      });
+     question.addOption('Nueva opción');
  
       this.callbacks.onQuestionUpdate(campaign.id);
       this._renderQuestionOptions(question, campaign, optionsContainer);
@@ -252,6 +250,10 @@ export class CampaignEditorView {
    * @private
    */
   _renderQuestionOptions(question, campaign, container) {
+      if (!option.id) {
+        option.id = crypto.randomUUID();
+      }
+
       container.innerHTML = '';
 
       question.options.forEach((option, index) => {
