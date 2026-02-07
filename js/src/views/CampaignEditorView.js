@@ -233,7 +233,11 @@ export class CampaignEditorView {
     });
 
     inner.querySelector('.btn-add-option').addEventListener('click', () => {
-      question.options.push('Nueva opción');
+     question.options.push({
+        id: crypto.randomUUID(),
+        text: 'Nueva opción'
+      });
+ 
       this.callbacks.onQuestionUpdate(campaign.id);
       this._renderQuestionOptions(question, campaign, optionsContainer);
     });
@@ -249,32 +253,32 @@ export class CampaignEditorView {
    * @private
    */
   _renderQuestionOptions(question, campaign, container) {
-    container.innerHTML = '';
+      container.innerHTML = '';
 
-    question.options.forEach((option, index) => {
-      const row = document.createElement('div');
-      row.className = 'option-item';
-
-      row.innerHTML = `
-        <input class="opt-text" type="text" value="${escapeHtml(option)}" />
-        <button class="btn btn-ghost btn-del-opt">Eliminar</button>
-      `;
-
-      row.querySelector('.btn-del-opt').addEventListener('click', () => {
-        
-        question.options.splice(index, 1);
-        this.callbacks.onQuestionUpdate(campaign.id);
-        this._renderQuestionOptions(question, campaign, container);
+      question.options.forEach((option, index) => {
+        const row = document.createElement('div');
+        row.className = 'option-item';
+      
+        row.innerHTML = `
+          <input class="opt-text" type="text" value="${escapeHtml(option.text)}" />
+          <button class="btn btn-ghost btn-del-opt">Eliminar</button>
+        `;
+      
+        row.querySelector('.btn-del-opt').addEventListener('click', () => {
+          question.options.splice(index, 1);
+          this.callbacks.onQuestionUpdate(campaign.id);
+          this._renderQuestionOptions(question, campaign, container);
+        });
+      
+        row.querySelector('.opt-text').addEventListener('change', (e) => {
+          option.text = e.target.value;   // ✅ mantiene el objeto
+          this.callbacks.onQuestionUpdate(campaign.id);
+        });
+      
+        container.appendChild(row);
       });
+    }
 
-      row.querySelector('.opt-text').addEventListener('change', (e) => {
-        question.options[index] = e.target.value;
-        this.callbacks.onQuestionUpdate(campaign.id);
-      });
-
-      container.appendChild(row);
-    });
-  }
 
   /**
    * Maneja el guardado de campaña
