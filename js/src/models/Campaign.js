@@ -6,9 +6,11 @@ export class Campaign {
     this.name = data.name || 'Campaña sin nombre';
 
     this.clientType =
-      data.clientType ||
-      data.client_type ||
-      CLIENT_TYPES.WITHOUT_CLIENTS;
+      data.clientType === CLIENT_TYPES.WITH_CLIENTS ||
+      data.clientType === CLIENT_TYPES.WITHOUT_CLIENTS
+        ? data.clientType
+        : CLIENT_TYPES.WITHOUT_CLIENTS;
+
 
     this.dateStart =
       data.dateStart ||
@@ -70,7 +72,7 @@ toJSON() {
   return {
     id: this.id,
     name: this.name || 'Campaña sin nombre',
-    client_type: this.clientType || CLIENT_TYPES.WITHOUT_CLIENTS, // 🔹 siempre definido
+    client_type: this.clientType,
     date_start: this.dateStart || new Date().toISOString(),
     date_end: this.dateEnd || null,
     questions: this.questions.map((q, index) => ({
@@ -82,7 +84,5 @@ toJSON() {
     }))
   };
 }
-
-
 
 }
