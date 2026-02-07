@@ -250,13 +250,15 @@ export class CampaignEditorView {
    * @private
    */
   _renderQuestionOptions(question, campaign, container) {
-      if (!option.id) {
-        option.id = crypto.randomUUID();
-      }
-
       container.innerHTML = '';
 
       question.options.forEach((option, index) => {
+      
+        // Blindaje defensivo correcto
+        if (!option.id) {
+          option.id = crypto.randomUUID();
+        }
+      
         const row = document.createElement('div');
         row.className = 'option-item';
       
@@ -272,13 +274,14 @@ export class CampaignEditorView {
         });
       
         row.querySelector('.opt-text').addEventListener('change', (e) => {
-          option.text = e.target.value;   // ✅ mantiene el objeto
+          option.text = e.target.value;
           this.callbacks.onQuestionUpdate(campaign.id);
         });
       
         container.appendChild(row);
       });
-    }
+  }
+
 
 
   /**
