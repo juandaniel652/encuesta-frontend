@@ -86,8 +86,20 @@ class APIService {
     return res.json();
   }
 
+  async submitResponse(response) {
+    const res = await fetch(`${this.baseURL}/responses`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(response)
+    });
 
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
+    }
 
+    return res.json();
+  }
 
 
 }
