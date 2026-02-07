@@ -122,14 +122,25 @@ export class AppController {
 
   /* ================= HANDLERS ================= */
 
-  handleCampaignSelect(campaignId) {
+  async handleCampaignSelect(campaignId) {
     this.selectedCampaignId = campaignId;
-    const campaign = this.getSelectedCampaign();
-    this.render();
-
-    // Solo render editor si NO estoy ejecutando
-    if (campaign && this.campaignEditorView) {
+    
+    try {
+      // Obtener campaña + preguntas
+      const rawCampaign = await apiService.getCampaignById(campaignId);
+    
+      // Mapear a modelo
+      const campaign = Campaign.fromJSON(rawCampaign);
+    
+      // Actualizar fuente de verdad
+      const index = this.campaigns.findIndex(c => c.id === campaign.id);
+      if (index !== -1) this.campaigns[index] = campaign;
+    
+      this.render();
       this.campaignEditorView.render(campaign);
+    
+    } catch (err) {
+      console.error('ERROR cargando campaña:', err);
     }
   }
 
@@ -155,9 +166,9 @@ export class AppController {
   async handleCampaignSave(campaignId, updates) {
     const campaign = this.campaigns.find(c => c.id === campaignId);
     if (!campaign) return;
-    
+
     campaign.update(updates);
-    
+
     // 🔴 ESTO ES LO QUE FALTABA
     await apiService.updateCampaign(campaign.id, {
       name: campaign.name,
@@ -165,10 +176,10 @@ export class AppController {
       date_start: campaign.dateStart,
       date_end: campaign.dateEnd
     });
-  
+
     for (let i = 0; i < campaign.questions.length; i++) {
       const q = campaign.questions[i];
-    
+
       if (!q.id) {
         const savedQuestion = await apiService.createQuestion({
           campaign_id: campaign.id,
@@ -178,7 +189,7 @@ export class AppController {
         });
         q.id = savedQuestion.id;
       }
-    
+
       for (const opt of q.options) {
         if (!opt.id) {
           const saved = await apiService.createQuestionOption({
@@ -189,15 +200,15 @@ export class AppController {
         }
       }
     }
-  
+
     // Rehidratar desde backend
     const raw = await apiService.getCampaignById(campaign.id);
     const freshCampaign = Campaign.fromJSON(raw);
-  
+
     const index = this.campaigns.findIndex(c => c.id === freshCampaign.id);
     this.campaigns[index] = freshCampaign;
     this.selectedCampaignId = freshCampaign.id;
-  
+
     this.render();
     this.campaignEditorView.render(freshCampaign);
   }
