@@ -13,91 +13,87 @@ export class Question {
     this.id = data.id || null;
     this.text = data.text || 'Nueva pregunta';
     this.type = data.type || QUESTION_TYPES.SINGLE;
-    this.options = data.options || ['Opción 1', 'Opción 2'];
+
+    this.options =
+      Array.isArray(data.options) && data.options.length > 0
+        ? data.options
+        : [
+            { id: crypto.randomUUID(), text: 'Opción 1' },
+            { id: crypto.randomUUID(), text: 'Opción 2' }
+          ];
   }
 
-  /**
-   * Actualiza el texto de la pregunta
-   * @param {string} text - Nuevo texto
-   */
   updateText(text) {
     this.text = text;
   }
 
-  /**
-   * Añade una opción a la pregunta
-   * @param {string} option - Texto de la opción
-   */
-  addOption(option = 'Nueva opción') {
-    this.options.push(option);
+  addOption(text = 'Nueva opción') {
+    this.options.push({
+      id: crypto.randomUUID(),
+      text
+    });
   }
 
-  /**
-   * Actualiza una opción específica
-   * @param {number} index - Índice de la opción
-   * @param {string} value - Nuevo valor
-   */
   updateOption(index, value) {
     if (index >= 0 && index < this.options.length) {
-      this.options[index] = value;
+      this.options[index].text = value;
     }
   }
 
-  /**
-   * Elimina una opción por índice
-   * @param {number} index - Índice de la opción a eliminar
-   */
   removeOption(index) {
     if (this.options.length > 1) {
       this.options.splice(index, 1);
     }
   }
 
-  /**
-   * Valida que la pregunta esté completa
-   * @returns {Object} { valid: boolean, errors: string[] }
-   */
   validate() {
     const errors = [];
-    
+
     if (!this.text || this.text.trim() === '') {
       errors.push('El texto de la pregunta es obligatorio');
     }
-    
+
     if (this.options.length < 2) {
       errors.push('Debe haber al menos 2 opciones');
     }
-    
-    const emptyOptions = this.options.filter(opt => !opt || opt.trim() === '');
+
+    const emptyOptions = this.options.filter(
+      opt => !opt.text || opt.text.trim() === ''
+    );
+
     if (emptyOptions.length > 0) {
       errors.push('Todas las opciones deben tener texto');
     }
-    
+
     return {
       valid: errors.length === 0,
       errors
     };
   }
 
-  /**
-   * Serializa la pregunta a JSON
-   * @returns {Object} Objeto plano con los datos
-   */
   toJSON() {
     return {
       id: this.id,
       text: this.text,
       type: this.type,
-      options: [...this.options]
+      options: this.options.map(o => ({
+        id: o.id,
+        text: o.text
+      }))
     };
   }
 
-  /**
-   * Crea una pregunta desde datos planos
-   * @param {Object} data - Datos de la pregunta
-   * @returns {Question} Instancia de Question
-   */
   static fromJSON(data) {
-    return new Question(data);
+    const rawOptions = data.options || data.question_options || [];
+
+    return new Question({
+      id: data.id,
+      text: data.text,
+      type: data.type,
+      options: rawOptions.map(o => ({
+        id: o.id,
+        text: o.text
+      }))
+    });
   }
 }
