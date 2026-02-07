@@ -175,10 +175,12 @@ export class AppController {
 
       // 2. CREAR OPCIONES
       for (const opt of q.options) {
-        await apiService.createQuestionOption({
-          question_id: q.id,
-          text: opt
-        });
+        if (!opt.id) {
+          await apiService.createQuestionOption({
+            question_id: q.id,
+            text: opt.text
+          });
+      }
       }
     }
 

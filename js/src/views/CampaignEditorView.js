@@ -234,7 +234,6 @@ export class CampaignEditorView {
 
     inner.querySelector('.btn-add-option').addEventListener('click', () => {
      question.options.push({
-        id: crypto.randomUUID(),
         text: 'Nueva opción'
       });
  
