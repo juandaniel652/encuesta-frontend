@@ -18,7 +18,7 @@ export const UI_CONFIG = {
 
 export const CLIENT_TYPES = {
   WITH_CLIENTS: 'with_clients',
-  WITHOUT_CLIENTS: 'without_clients'
+  WITHOUT_CLIENTS: 'standard'
 };
 
 export const QUESTION_TYPES = {
