@@ -1,4 +1,5 @@
 import { CLIENT_TYPES } from '../config/constants.js';
+import { Question } from './Question.js';
 
 export class Campaign {
   constructor(data = {}) {
@@ -11,7 +12,6 @@ export class Campaign {
         ? data.clientType
         : CLIENT_TYPES.WITHOUT_CLIENTS;
 
-
     this.dateStart =
       data.dateStart ||
       data.date_start ||
@@ -22,11 +22,18 @@ export class Campaign {
       data.date_end ||
       null;
 
-    this.questions = data.questions || [];
+    // 🔴 Regla: siempre instancias de Question
+    this.questions = (data.questions || []).map(q =>
+      q instanceof Question ? q : Question.fromJSON(q)
+    );
+
     this.updatedAt = data.updatedAt || null;
   }
 
   addQuestion(question) {
+    if (!(question instanceof Question)) {
+      throw new Error('addQuestion espera una instancia de Question');
+    }
     this.questions.push(question);
     this.updatedAt = new Date().toISOString();
   }
@@ -41,48 +48,43 @@ export class Campaign {
     if (data.clientType !== undefined) this.clientType = data.clientType;
     if (data.dateStart !== undefined) this.dateStart = data.dateStart;
     if (data.dateEnd !== undefined) this.dateEnd = data.dateEnd;
-    if (data.questions !== undefined) this.questions = data.questions;
+
+    if (data.questions !== undefined) {
+      this.questions = data.questions.map(q =>
+        q instanceof Question ? q : Question.fromJSON(q)
+      );
+    }
 
     this.updatedAt = new Date().toISOString();
   }
 
-  // models/Campaign.js
-static fromJSON(data) {
-  return new Campaign({
-    id: data.id,
-    name: data.name,
-    clientType: data.client_type,
-    dateStart: data.date_start,
-    dateEnd: data.date_end,
-    questions: (data.questions || []).map(q => ({
-      id: q.id,
-      text: q.text,
-      type: q.type,
-      options: (q.question_options || []).map(o => ({
-        id: o.id,
-        text: o.text
+  // 🔹 Entrada desde backend
+  static fromJSON(data) {
+    return new Campaign({
+      id: data.id,
+      name: data.name,
+      clientType: data.client_type,
+      dateStart: data.date_start,
+      dateEnd: data.date_end,
+      questions: (data.questions || []).map(q =>
+        Question.fromJSON(q)
+      ),
+      updatedAt: data.updated_at
+    });
+  }
+
+  // 🔹 Salida hacia backend
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name || 'Campaña sin nombre',
+      client_type: this.clientType,
+      date_start: this.dateStart || new Date().toISOString(),
+      date_end: this.dateEnd || null,
+      questions: this.questions.map((q, index) => ({
+        ...q.toJSON(),
+        position: index
       }))
-    })),
-    updatedAt: data.updated_at
-  });
-}
-
-
-toJSON() {
-  return {
-    id: this.id,
-    name: this.name || 'Campaña sin nombre',
-    client_type: this.clientType,
-    date_start: this.dateStart || new Date().toISOString(),
-    date_end: this.dateEnd || null,
-    questions: this.questions.map((q, index) => ({
-      id: q.id,
-      text: q.text,
-      type: q.type,
-      position: index,
-      options: q.options || []
-    }))
-  };
-}
-
+    };
+  }
 }
