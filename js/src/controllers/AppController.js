@@ -155,13 +155,15 @@ export class AppController {
   async handleCampaignSave(campaignId, updates) {
     const campaign = this.campaigns.find(c => c.id === campaignId);
     if (!campaign) return;
-
+    
+    // 1. Actualizar modelo local
     campaign.update(updates);
-
+    
+    // 2. Persistir preguntas y opciones
     for (let i = 0; i < campaign.questions.length; i++) {
       const q = campaign.questions[i];
-
-      // 1. Crear pregunta solo si es nueva
+    
+      // Crear pregunta si es nueva
       if (!q.id) {
         const savedQuestion = await apiService.createQuestion({
           campaign_id: campaign.id,
@@ -169,11 +171,11 @@ export class AppController {
           type: q.type,
           position: i
         });
-
+      
         q.id = savedQuestion.id;
       }
-
-      // 2. CREAR OPCIONES
+    
+      // Crear opciones si son nuevas
       for (const opt of q.options) {
         if (!opt.id) {
           const saved = await apiService.createQuestionOption({
@@ -182,12 +184,23 @@ export class AppController {
           });
           opt.id = saved.id;
         }
-        }
+      }
     }
-
-    await this.loadData();
+  
+    // 3. 🔑 Rehidratar desde backend (fuente de verdad)
+    const raw = await apiService.getCampaignById(campaign.id);
+    const freshCampaign = Campaign.fromJSON(raw);
+  
+    // 4. Actualizar estado global
+    const index = this.campaigns.findIndex(c => c.id === freshCampaign.id);
+    this.campaigns[index] = freshCampaign;
+    this.selectedCampaignId = freshCampaign.id;
+  
+    // 5. Render con datos reales
     this.render();
-}
+    this.campaignEditorView.render(freshCampaign);
+  }
+
 
 
   // ELIMINAR (cuando implementes endpoint DELETE)
