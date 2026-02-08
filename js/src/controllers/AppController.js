@@ -124,32 +124,41 @@ export class AppController {
 
   async handleCampaignSelect(campaignId) {
     this.selectedCampaignId = campaignId;
-    
+
     try {
-      // Obtener campaña + preguntas
-      const rawCampaign = await apiService.getCampaignById(campaignId);
-    
-      // Mapear a modelo
-      const campaign = Campaign.fromJSON(rawCampaign);
-    
-      // Actualizar fuente de verdad
+      // 🔑 Traer campaña completa: con preguntas y opciones
+      const raw = await apiService.getCampaignById(campaignId);
+      const campaign = Campaign.fromJSON(raw);
+
+      // 🔑 Actualizar el array local
       const index = this.campaigns.findIndex(c => c.id === campaign.id);
-      if (index !== -1) this.campaigns[index] = campaign;
-    
+      if (index !== -1) {
+        this.campaigns[index] = campaign;
+      } else {
+        this.campaigns.push(campaign);
+      }
+
       this.render();
-      this.campaignEditorView.render(campaign);
-    
+
+      // Render editor
+      if (this.campaignEditorView) {
+        this.campaignEditorView.render(campaign);
+      }
+
     } catch (err) {
-      console.error('ERROR cargando campaña:', err);
+      console.error('Error cargando campaña completa:', err);
+      alert('No se pudo cargar la campaña. Revisá la consola.');
     }
   }
+
 
 
   // CREAR CAMPAÑA → BACKEND DIRECTO
   handleNewCampaign() {
     const newCampaign = new Campaign({
       name: 'Campaña sin nombre',
-      clientType: CLIENT_TYPES.WITHOUT_CLIENTS // asegurar valor
+      clientType: CLIENT_TYPES.WITHOUT_CLIENTS, // asegurar valor
+      questions: []
     });
 
     apiService.createCampaign(newCampaign)
