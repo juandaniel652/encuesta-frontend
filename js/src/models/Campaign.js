@@ -38,9 +38,8 @@ export class Campaign {
     this.updatedAt = new Date().toISOString();
   }
 
-  removeQuestion(questionId) {
-    this.questions = this.questions.filter(q => q.id !== questionId);
-    this.updatedAt = new Date().toISOString();
+  removeQuestion(id) {
+    this.questions = this.questions.filter(q => q.id !== id);
   }
 
   update(data = {}) {

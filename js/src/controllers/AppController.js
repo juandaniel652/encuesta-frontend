@@ -275,17 +275,15 @@ export class AppController {
     
     await apiService.deleteQuestion(questionId);
     
-    // 🔑 volver a traer la campaña real
-    const raw = await apiService.getCampaignById(campaignId);
-    const freshCampaign = Campaign.fromJSON(raw);
+    const campaign = this.campaigns.find(c => c.id === campaignId);
+    if (!campaign) return;
     
-    const index = this.campaigns.findIndex(c => c.id === campaignId);
-    this.campaigns[index] = freshCampaign;
-    this.selectedCampaignId = freshCampaign.id;
+    // 🔑 ESTO ES LO QUE TE FALTABA
+    campaign.removeQuestion(questionId);
     
-    this.render();
-    this.campaignEditorView.render(freshCampaign);
+    this.campaignEditorView.render(campaign);
   }
+
 
 
 

@@ -34,7 +34,7 @@ class APIService {
       q.options = await resOptions.json();
     }
 
-    campaign.questions = questions;
+    campaign.questions = questions.filter(q => q.isActive !== false);;
     return campaign;
   }
 
