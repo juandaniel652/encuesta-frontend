@@ -272,15 +272,21 @@ export class AppController {
 
   async handleQuestionDelete(campaignId, questionId) {
     if (!confirm('¿Eliminar pregunta?')) return;
-
+    
     await apiService.deleteQuestion(questionId);
-
-    const campaign = this.campaigns.find(c => c.id === campaignId);
-    if (!campaign) return;
-
-    campaign.removeQuestion(questionId);
-    this.campaignEditorView.render(campaign);
+    
+    // 🔑 volver a traer la campaña real
+    const raw = await apiService.getCampaignById(campaignId);
+    const freshCampaign = Campaign.fromJSON(raw);
+    
+    const index = this.campaigns.findIndex(c => c.id === campaignId);
+    this.campaigns[index] = freshCampaign;
+    this.selectedCampaignId = freshCampaign.id;
+    
+    this.render();
+    this.campaignEditorView.render(freshCampaign);
   }
+
 
 
   // EJECUTAR
