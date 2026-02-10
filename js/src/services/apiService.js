@@ -99,6 +99,23 @@ class APIService {
     return res.json();
   }
 
+  async updateQuestion(id, payload) {
+    return fetch(`${this.baseURL}/questions/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(r => r.json());
+  }
+  
+  async updateQuestionOption(id, payload) {
+    return fetch(`${this.baseURL}/question-options/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(r => r.json());
+  }
+
+
   /* ================= RESPONSES ================= */
 
   async submitResponse(response) {
