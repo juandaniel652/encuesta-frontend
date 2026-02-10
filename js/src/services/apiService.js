@@ -111,6 +111,21 @@ class APIService {
     if (!res.ok) throw new Error(await res.text());
     return res.json();
   }
+
+  
+  /*PRUEBA DE NUEVO ENDPOINT*/ 
+
+  async saveCampaignFull(id, payload) {
+    console.log("🔥 LLAMANDO FULL SAVE", payload);
+    return this.request(`/campaigns/${id}/full`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+  }
+
 }
+
+  
+
 
 export const apiService = new APIService();
