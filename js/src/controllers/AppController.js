@@ -21,7 +21,6 @@ export class AppController {
     this.api = apiService;
     this.models = { Campaign, Question };
     this.state = new AppState();
-    this.render = null
 
     Object.assign(this,
       createCampaignHandlers(this),
@@ -36,6 +35,14 @@ export class AppController {
     this.state.campaigns = data.map(c => Campaign.fromJSON(c));
     this.initializeViews();
     this.render();
+  }
+
+  render() {
+    this.campaignListView.render(
+      this.state.campaigns,
+      this.state.selectedCampaignId,
+      document.getElementById('filterInput')?.value || ''
+    );
   }
 
   renderEditor(campaign) {
