@@ -1,6 +1,8 @@
 /*Orquestador de la aplicación, maneja el estado global y 
 delega tareas a los servicios y vistas*/
 
+import { apiService } from '../services/apiService.js';
+
 export class AppController {
   constructor() {
     this.api = apiService;
