@@ -4,11 +4,11 @@ delega tareas a los servicios y vistas*/
 import { apiService } from '../services/apiService.js';
 import { Campaign } from '../models/Campaign.js';
 import { Question } from '../models/Question.js';
-//import { CampaignListView } from '../views/CampaignListView.js';
-//import { CampaignEditorView } from '../views/CampaignEditorView.js';
-//import { CampaignRunnerView } from '../views/CampaignRunnerView.js';
-//import { ResponsesView } from '../views/ResponsesView.js';
-//import { CLIENT_TYPES } from '../config/constants.js';
+import { CampaignListView } from '../views/CampaignListView.js';
+import { CampaignEditorView } from '../views/CampaignEditorView.js';
+import { CampaignRunnerView } from '../views/CampaignRunnerView.js';
+import { ResponsesView } from '../views/ResponsesView.js';
+import { CLIENT_TYPES } from '../config/constants.js';
 
 
 
