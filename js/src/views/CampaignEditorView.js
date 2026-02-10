@@ -321,6 +321,9 @@ export class CampaignEditorView {
     };
 
     console.log("Payload real:", updates);
-    this.callbacks.onSave(campaign.id, updates);
+    this.callbacks.onSave(campaign.id, {
+      campaign: updates,
+      questions: campaign.questions
+    });
   }
 }

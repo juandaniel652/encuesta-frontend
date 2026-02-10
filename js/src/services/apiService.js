@@ -29,12 +29,14 @@ class APIService {
 
     // 3️⃣ Traer opciones para cada pregunta
     for (const q of questions) {
+
+      if (!q.id) continue;
+
       const resOptions = await fetch(`${this.baseURL}/question-options/${q.id}`);
       if (!resOptions.ok) throw new Error('Error al obtener opciones');
       q.options = await resOptions.json();
     }
 
-    campaign.questions = questions.filter(q => q.isActive !== false);;
     return campaign;
   }
 
