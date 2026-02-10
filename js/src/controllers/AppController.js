@@ -9,11 +9,6 @@ import { createCampaignHandlers } from './CampaignHandlers.js';
 import { createQuestionHandlers } from './QuestionHandlers.js';
 import { createRunHandlers } from './RunHandlers.js';
 import { createResponseHandlers } from './ResponseHandlers.js';
-//import { CampaignListView } from '../views/CampaignListView.js';
-//import { CampaignEditorView } from '../views/CampaignEditorView.js';
-//import { CampaignRunnerView } from '../views/CampaignRunnerView.js';
-//import { ResponsesView } from '../views/ResponsesView.js';
-//import { CLIENT_TYPES } from '../config/constants.js';
 
 
 
@@ -42,4 +37,40 @@ export class AppController {
     this.render();
     this.campaignEditorView.render(campaign);
   }
+
+  initializeViews() {
+    this.campaignListView = new CampaignListView(
+      document.getElementById('campaignList'),
+      this.handleCampaignSelect
+    );
+  
+    this.campaignEditorView = new CampaignEditorView(
+      document.getElementById('contentArea'),
+      {
+        onSave: this.handleCampaignSave,
+        onDelete: this.handleCampaignDelete,
+        onDuplicate: this.handleCampaignDuplicate,
+        onAddQuestion: this.handleAddQuestion,
+        onQuestionUpdate: this.handleQuestionUpdate,
+        onQuestionDelete: this.handleQuestionDelete
+      }
+    );
+  
+    this.campaignRunnerView = new CampaignRunnerView(
+      document.getElementById('contentArea'),
+      {
+        onSubmit: this.handleResponseSubmit,
+        onCancel: this.handleRunCancel
+      }
+    );
+  
+    this.responsesView = new ResponsesView(
+      document.getElementById('contentArea'),
+      {
+        onBack: this.handleResponsesBack
+      }
+    );
+  }
+
+
 }
