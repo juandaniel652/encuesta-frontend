@@ -5,11 +5,15 @@ import { apiService } from '../services/apiService.js';
 import { Campaign } from '../models/Campaign.js';
 import { Question } from '../models/Question.js';
 import { AppState } from './AppState.js';
-import { CampaignListView } from '../views/CampaignListView.js';
-import { CampaignEditorView } from '../views/CampaignEditorView.js';
-import { CampaignRunnerView } from '../views/CampaignRunnerView.js';
-import { ResponsesView } from '../views/ResponsesView.js';
-import { CLIENT_TYPES } from '../config/constants.js';
+import { createCampaignHandlers } from './CampaignHandlers.js';
+import { createQuestionHandlers } from './QuestionHandlers.js';
+import { createRunHandlers } from './RunHandlers.js';
+import { createResponseHandlers } from './ResponseHandlers.js';
+//import { CampaignListView } from '../views/CampaignListView.js';
+//import { CampaignEditorView } from '../views/CampaignEditorView.js';
+//import { CampaignRunnerView } from '../views/CampaignRunnerView.js';
+//import { ResponsesView } from '../views/ResponsesView.js';
+//import { CLIENT_TYPES } from '../config/constants.js';
 
 
 
