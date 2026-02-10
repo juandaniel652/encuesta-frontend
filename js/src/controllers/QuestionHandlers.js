@@ -8,6 +8,12 @@ export function createQuestionHandlers(controller) {
       controller.renderEditor(campaign);
     },
 
+    handleQuestionUpdate(campaignId) {
+      // por ahora no hace nada
+      // se guarda cuando tocan "Guardar campaña"
+      console.log("Question updated in campaign", campaignId);
+    },
+
     async handleQuestionDelete(campaignId, questionId) {
       await controller.api.deleteQuestion(questionId);
       const campaign = controller.state.getSelectedCampaign();
