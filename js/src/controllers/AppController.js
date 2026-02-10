@@ -179,13 +179,16 @@ export class AppController {
     campaign.update(updates);
 
     // 🔴 ESTO ES LO QUE FALTABA
-    await apiService.updateCampaign(campaign.id, {
-      name: campaign.name,
-      client_type: campaign.clientType,
-      date_start: campaign.dateStart,
-      date_end: campaign.dateEnd
+    await apiService.saveCampaignFull(campaign.id, {
+      campaign: {
+        name: campaign.name,
+        client_type: campaign.clientType,
+        date_start: campaign.dateStart,
+        date_end: campaign.dateEnd
+      },
+      questions: campaign.questions
     });
-
+    
     for (let i = 0; i < campaign.questions.length; i++) {
       const q = campaign.questions[i];
 
