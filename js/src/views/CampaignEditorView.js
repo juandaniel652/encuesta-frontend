@@ -182,10 +182,13 @@ export class CampaignEditorView {
     const questionsList = document.createElement('div');
     questionsList.className = 'questions-list';
 
-    campaign.questions.forEach(question => {
+    campaign.questions
+    .filter(q => q.is_active !== false)
+    .forEach(question => {
       const questionCard = this._createQuestionCard(question, campaign);
       questionsList.appendChild(questionCard);
     });
+
 
     const addButton = document.createElement('div');
     addButton.style.marginTop = '10px';
@@ -239,11 +242,14 @@ export class CampaignEditorView {
       this._renderQuestionOptions(question, campaign, optionsContainer);
     });
 
-    inner.querySelector('.btn-delete-q').addEventListener('click', 
-      () => this.callbacks.onQuestionDelete(campaign.id, question.id));
+    inner.querySelector('.btn-delete-q').addEventListener('click', () => {
+      question.is_active = false;
+      this.callbacks.onQuestionUpdate(campaign.id);
+      this.render(campaign);
+    });
 
     return card;
-  }
+    }
 
   /**
    * Renderiza las opciones de una pregunta
@@ -252,7 +258,9 @@ export class CampaignEditorView {
   _renderQuestionOptions(question, campaign, container) {
       container.innerHTML = '';
 
-      question.options.forEach((option, index) => {
+      question.options
+      .filter(o => o.is_active !== false)
+      .forEach((option, index) => {
       
         // Blindaje defensivo correcto
         if (!option.id) {
@@ -268,7 +276,7 @@ export class CampaignEditorView {
         `;
       
         row.querySelector('.btn-del-opt').addEventListener('click', () => {
-          question.options.splice(index, 1);
+          option.is_active = false;
           this.callbacks.onQuestionUpdate(campaign.id);
           this._renderQuestionOptions(question, campaign, container);
         });
