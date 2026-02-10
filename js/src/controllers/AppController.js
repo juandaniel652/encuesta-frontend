@@ -4,7 +4,7 @@ delega tareas a los servicios y vistas*/
 import { apiService } from '../services/apiService.js';
 import { Campaign } from '../models/Campaign.js';
 import { Question } from '../models/Question.js';
-import { AppState } from '../state/AppState.js';
+import { AppState } from './AppState.js';
 import { CampaignListView } from '../views/CampaignListView.js';
 import { CampaignEditorView } from '../views/CampaignEditorView.js';
 import { CampaignRunnerView } from '../views/CampaignRunnerView.js';
