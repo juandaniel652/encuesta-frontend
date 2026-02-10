@@ -117,11 +117,17 @@ class APIService {
 
   async saveCampaignFull(id, payload) {
     console.log("🔥 LLAMANDO FULL SAVE", payload);
-    return this.request(`/campaigns/${id}/full`, {
+    
+    const res = await fetch(`${this.baseURL}/campaigns/${id}/full`, {
       method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
+  
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
   }
+
 
 }
 
