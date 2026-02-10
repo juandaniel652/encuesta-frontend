@@ -13,7 +13,6 @@ import { CampaignListView } from '../views/CampaignListView.js';
 import { CampaignEditorView } from '../views/CampaignEditorView.js';
 import { CampaignRunnerView } from '../views/CampaignRunnerView.js';
 import { ResponsesView } from '../views/ResponsesView.js';
-import {render} from '../views/CampaignEditorView.js'; 
 import { CLIENT_TYPES } from '../config/constants.js';
 
 
@@ -22,7 +21,7 @@ export class AppController {
     this.api = apiService;
     this.models = { Campaign, Question };
     this.state = new AppState();
-    this.render = render;
+    this.render = null
 
     Object.assign(this,
       createCampaignHandlers(this),
