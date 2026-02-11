@@ -242,7 +242,7 @@ export class CampaignEditorView {
 
     inner.querySelector('.btn-delete-q').addEventListener('click', () => {
       question.is_active = false;
-      this.callbacks.onQuestionUpdate(campaign.id);
+      this.callbacks.onQuestionUpdate(question.id);
       this.render(campaign);
     });
 
