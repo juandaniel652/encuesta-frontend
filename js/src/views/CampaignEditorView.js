@@ -282,10 +282,7 @@ export class CampaignEditorView {
 
         // editar opción
         row.querySelector('.opt-text').addEventListener('change', (e) => {
-          option.text = e.target.value;
-          this.callbacks.onOptionUpdate(question.id, {
-            text: option.text
-          });
+          this.callbacks.onOptionUpdate(question.id, option.id, e.target.value);
         });
 
         container.appendChild(row);
