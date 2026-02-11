@@ -39,6 +39,44 @@ export function createQuestionHandlers(controller) {
       question.options.push(option);
 
       controller.renderEditor(campaign);
+    },
+
+    async handleAddQuestion(campaignId) {
+      const campaign = controller.state.getSelectedCampaign();
+        
+      // 1. Crear pregunta local con ID temporal
+      const tempId = 'q_' + crypto.randomUUID();
+        
+      const tempQuestion = new Question({
+        id: tempId,
+        campaign_id: campaignId,
+        text: 'Nueva pregunta',
+        type: 'text',
+        position: campaign.questions.length + 1,
+        is_active: true,
+        options: []
+      });
+  
+      campaign.questions.push(tempQuestion);
+      controller.renderEditor(campaign);
+  
+      // 2. Crear en backend
+      const created = await controller.api.createQuestion({
+        campaign_id: campaignId,
+        text: tempQuestion.text,
+        type: tempQuestion.type,
+        position: tempQuestion.position
+      });
+  
+      // 3. 🔥 SINCRONIZAR ID REAL
+      const q = campaign.questions.find(q => q.id === tempId);
+      if (q) {
+        q.id = created.id;
+      }
+  
+      controller.renderEditor(campaign);
     }
+
+
   };
 }
