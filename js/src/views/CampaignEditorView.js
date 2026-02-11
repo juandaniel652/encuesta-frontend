@@ -232,7 +232,7 @@ export class CampaignEditorView {
     // Event listeners
     inner.querySelector('.q-text').addEventListener('change', (e) => {
       question.text = e.target.value;
-      this.callbacks.onQuestionUpdate(campaign.id);
+      this.callbacks.onQuestionUpdate(question.id);
     });
 
     inner.querySelector('.btn-add-option').addEventListener('click', () => {
@@ -255,40 +255,39 @@ export class CampaignEditorView {
    */
   _renderQuestionOptions(question, campaign, container) {
     container.innerHTML = '';
-    
+
     question.options
       .filter(o => o.is_active !== false)
       .forEach((option, index) => {
-      
+
         if (!option.id) {
           option.id = crypto.randomUUID();
         }
-      
+
         const row = document.createElement('div');
         row.className = 'option-item';
-      
+
         row.innerHTML = `
           <input class="opt-text" type="text" value="${escapeHtml(option.text)}" />
           <button class="btn btn-ghost btn-del-opt">Eliminar</button>
         `;
-      
+
         // eliminar opción
         row.querySelector('.btn-del-opt').addEventListener('click', () => {
           option.is_active = false;
-          this.callbacks.onOptionUpdate(option.id, {
-            is_active: false
-          });
+          this.callbacks.onQuestionUpdate(question.id);
           this._renderQuestionOptions(question, campaign, container);
         });
-      
+
+
         // editar opción
         row.querySelector('.opt-text').addEventListener('change', (e) => {
           option.text = e.target.value;
-          this.callbacks.onOptionUpdate(option.id, {
+          this.callbacks.onOptionUpdate(question.id, {
             text: option.text
           });
         });
-      
+
         container.appendChild(row);
       });
   }
