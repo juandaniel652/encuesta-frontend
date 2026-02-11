@@ -62,9 +62,10 @@ export class AppController {
         onSave: this.handleCampaignSave,
         onDelete: this.handleCampaignDelete,
         onDuplicate: this.handleCampaignDuplicate,
-        onOptionCreate: this.handleOptionCreate, // ← limpio
         onAddQuestion: this.handleAddQuestion,
         onQuestionUpdate: this.handleQuestionUpdate,
+        onOptionUpdate: this.handleOptionUpdate,   
+        onOptionCreate: this.handleOptionCreate,
         onQuestionDelete: this.handleQuestionDelete
       }
     );
