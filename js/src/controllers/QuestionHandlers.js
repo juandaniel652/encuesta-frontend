@@ -1,24 +1,21 @@
-/*Edicion de preguntas y opciones*/
+/* Edicion de preguntas y opciones */
 
 export function createQuestionHandlers(controller) {
   return {
-    handleAddQuestion(campaignId) {
-      const campaign = controller.state.getSelectedCampaign();
-      campaign.addQuestion(new controller.models.Question());
-      controller.renderEditor(campaign);
-    },
 
-    handleQuestionUpdate(campaignId) {
-      // por ahora no hace nada
-      // se guarda cuando tocan "Guardar campaña"
-      console.log("Question updated in campaign", campaignId);
-    },
+    async handleOptionCreate(questionId, text = 'Nueva opción') {
+      const option = await controller.api.createQuestionOption({
+        question_id: questionId,
+        text,
+        is_active: true
+      });
 
-    async handleQuestionDelete(campaignId, questionId) {
-      await controller.api.deleteQuestion(questionId);
       const campaign = controller.state.getSelectedCampaign();
-      campaign.removeQuestion(questionId);
+      const question = campaign.questions.find(q => q.id === questionId);
+      question.options.push(option);
+
       controller.renderEditor(campaign);
     }
+
   };
 }

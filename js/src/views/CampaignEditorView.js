@@ -236,11 +236,9 @@ export class CampaignEditorView {
     });
 
     inner.querySelector('.btn-add-option').addEventListener('click', () => {
-     question.addOption('Nueva opción');
- 
-      this.callbacks.onQuestionUpdate(campaign.id);
-      this._renderQuestionOptions(question, campaign, optionsContainer);
+      this.callbacks.onOptionCreate(question.id, 'Nueva opción');
     });
+
 
     inner.querySelector('.btn-delete-q').addEventListener('click', () => {
       question.is_active = false;

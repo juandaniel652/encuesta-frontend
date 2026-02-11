@@ -62,11 +62,13 @@ export class AppController {
         onSave: this.handleCampaignSave,
         onDelete: this.handleCampaignDelete,
         onDuplicate: this.handleCampaignDuplicate,
+        onOptionCreate: this.handleOptionCreate, // ← limpio
         onAddQuestion: this.handleAddQuestion,
         onQuestionUpdate: this.handleQuestionUpdate,
         onQuestionDelete: this.handleQuestionDelete
       }
     );
+
   
     this.campaignRunnerView = new CampaignRunnerView(
       document.getElementById('contentArea'),
