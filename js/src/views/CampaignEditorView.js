@@ -254,13 +254,12 @@ export class CampaignEditorView {
    * @private
    */
   _renderQuestionOptions(question, campaign, container) {
-      container.innerHTML = '';
-
-      question.options
+    container.innerHTML = '';
+    
+    question.options
       .filter(o => o.is_active !== false)
       .forEach((option, index) => {
       
-        // Blindaje defensivo correcto
         if (!option.id) {
           option.id = crypto.randomUUID();
         }
@@ -273,20 +272,27 @@ export class CampaignEditorView {
           <button class="btn btn-ghost btn-del-opt">Eliminar</button>
         `;
       
+        // eliminar opción
         row.querySelector('.btn-del-opt').addEventListener('click', () => {
           option.is_active = false;
-          this.callbacks.onQuestionUpdate(campaign.id);
+          this.callbacks.onOptionUpdate(option.id, {
+            is_active: false
+          });
           this._renderQuestionOptions(question, campaign, container);
         });
       
+        // editar opción
         row.querySelector('.opt-text').addEventListener('change', (e) => {
           option.text = e.target.value;
-          this.callbacks.onQuestionUpdate(campaign.id);
+          this.callbacks.onOptionUpdate(option.id, {
+            text: option.text
+          });
         });
       
         container.appendChild(row);
       });
   }
+
 
 
 
