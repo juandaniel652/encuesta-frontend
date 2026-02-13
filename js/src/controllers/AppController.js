@@ -66,7 +66,7 @@ export class AppController {
         onQuestionUpdate: this.handleQuestionUpdate,
         onOptionUpdate: this.handleOptionUpdate,   
         onOptionCreate: this.handleOptionCreate,
-        onQuestionDelete: this.handleQuestionDelete
+        onQuestionDelete: this.handleDeleteQuestion
       }
     );
 
