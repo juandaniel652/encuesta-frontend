@@ -261,8 +261,9 @@ export class CampaignEditorView {
       .forEach((option, index) => {
 
         if (!option.id) {
-          option.id = crypto.randomUUID();
+          throw new Error("Option sin ID. Estado corrupto.");
         }
+
 
         const row = document.createElement('div');
         row.className = 'option-item';
