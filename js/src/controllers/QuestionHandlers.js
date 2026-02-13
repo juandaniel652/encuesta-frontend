@@ -34,40 +34,33 @@ export function createQuestionHandlers(controller) {
 
 
     async handleAddQuestion(campaignId) {
-      const campaign = controller.state.getSelectedCampaign();
-        
-      // 1. Crear pregunta local con ID temporal
-      const tempId = 'q_' + crypto.randomUUID();
-        
-      const tempQuestion = new Question({
-        id: tempId,
+      const created = await controller.api.createQuestion({
         campaign_id: campaignId,
         text: 'Nueva pregunta',
         type: 'text',
-        position: campaign.questions.length + 1,
-        is_active: true,
-        options: []
+        position: controller.state.getSelectedCampaign().questions.length + 1
       });
-  
-      campaign.questions.push(tempQuestion);
-      controller.renderEditor(campaign);
-  
-      // 2. Crear en backend
-      const created = await controller.api.createQuestion({
-        campaign_id: campaignId,
-        text: tempQuestion.text,
-        type: tempQuestion.type,
-        position: tempQuestion.position
+    
+      const freshCampaign = await controller.api.getCampaignById(campaignId);
+      controller.state.setSelectedCampaign(freshCampaign);
+      controller.renderEditor(freshCampaign);
+    },
+
+    async handleAddOption(questionId) {
+      const campaign = controller.state.getSelectedCampaign();
+
+      // 1. Crear en backend
+      await controller.api.createQuestionOption({
+        question_id: questionId,
+        text: 'Nueva opción'
       });
-  
-      // 3. 🔥 SINCRONIZAR ID REAL
-      const q = campaign.questions.find(q => q.id === tempId);
-      if (q) {
-        q.id = created.id;
-      }
-  
-      controller.renderEditor(campaign);
+    
+      // 2. Rehidratar estado real
+      const freshCampaign = await controller.api.getCampaignById(campaign.id);
+      controller.state.setSelectedCampaign(freshCampaign);
+      controller.renderEditor(freshCampaign);
     }
+
 
 
   };

@@ -1,28 +1,18 @@
-import { QUESTION_TYPES } from '../config/constants.js';
-
 export class Question {
   constructor(data = {}) {
     this.id = data.id || null;
     this.text = data.text || 'Nueva pregunta';
     this.type = data.type || QUESTION_TYPES.SINGLE;
 
-    this.options =
-      Array.isArray(data.options) && data.options.length > 0
-        ? data.options
-        : [
-            { id: null, text: 'Opción 1' },
-            { id: null, text: 'Opción 2' }
-          ];
+    // SOLO lo que venga del backend
+    this.options = Array.isArray(data.options) ? data.options : [];
   }
 
-  addOption(text = 'Nueva opción') {
-    this.options.push({
-      id: null,
-      text
-    });
+  // 🔥 NO usar más
+  addOption() {
+    throw new Error("addOption no se usa. Las opciones se crean vía backend.");
   }
 
-  // 🔑 NECESARIO para Campaign.fromJSON
   static fromJSON(data) {
     const rawOptions = data.options || data.question_options || [];
 
