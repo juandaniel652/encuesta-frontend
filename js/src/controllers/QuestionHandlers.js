@@ -18,6 +18,23 @@ export function createQuestionHandlers(controller) {
       controller.renderEditor(freshCampaign);
     },
 
+    async handleQuestionUpdate(questionId) {
+      const campaign = controller.state.getSelectedCampaign();
+      const question = campaign.questions.find(q => q.id === questionId);
+
+      // mandar la pregunta entera al backend
+      await controller.api.updateQuestion(questionId, {
+        text: question.text,
+        type: question.type,
+        options: question.options
+      });
+
+      // refrescar desde backend
+      const fresh = await controller.api.getCampaignById(campaign.id);
+      controller.state.setCampaign(fresh);
+      controller.renderEditor(fresh);
+    },
+
     async handleAddQuestion(campaignId) {
       const campaign = controller.state.getSelectedCampaign();
 
