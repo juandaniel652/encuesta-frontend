@@ -1,50 +1,40 @@
 export function createQuestionHandlers(controller) {
   return {
 
-    async handleOptionUpdate(optionId, updates) {
+    async handleQuestionUpdate(questionId, updates) {
       const campaign = controller.state.getSelectedCampaign();
-      
-      console.log("OPTIONS:", campaign.questions.map(q => q.options));
-      console.log("BUSCANDO:", optionId);
 
-      const question = campaign.questions.find(q =>
-        q.options.some(o => o.id === optionId)
-      );
-    
-      if (!question) {
-        console.error("Question not found for option:", optionId);
-        return;
-      }
-    
-      const option = question.options.find(o => o.id === optionId);
-    
-      if (!option) {
-        console.error("Option not found:", optionId);
-        return;
-      }
-    
-      option.text = updates.text;
-    
-      await controller.api.updateQuestionOption(optionId, updates);
+      await controller.api.updateQuestion(questionId, updates);
+
       const freshCampaign = await controller.api.getCampaignById(campaign.id);
-      controller.state.setSelectedCampaign(freshCampaign);
+
+      controller.state.setCampaign(freshCampaign);
+      controller.state.setSelectedCampaign(freshCampaign.id);
+
       controller.renderEditor(freshCampaign);
     },
+
 
 
 
     async handleAddQuestion(campaignId) {
+      const campaign = controller.state.getSelectedCampaign();
+        
       const created = await controller.api.createQuestion({
         campaign_id: campaignId,
         text: 'Nueva pregunta',
         type: 'text',
-        position: controller.state.getSelectedCampaign().questions.length + 1
+        position: campaign.questions.length + 1
       });
     
       const freshCampaign = await controller.api.getCampaignById(campaignId);
-      controller.state.setSelectedCampaign(freshCampaign);
+    
+      controller.state.setCampaign(freshCampaign);
+      controller.state.setSelectedCampaign(freshCampaign.id);
+    
       controller.renderEditor(freshCampaign);
     },
+
 
     async handleAddOption(questionId) {
       const campaign = controller.state.getSelectedCampaign();

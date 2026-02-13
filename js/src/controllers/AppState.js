@@ -1,5 +1,3 @@
-/*Unica  fuente de verdad */
-
 export class AppState {
   constructor() {
     this.campaigns = [];
@@ -14,5 +12,9 @@ export class AppState {
     const index = this.campaigns.findIndex(c => c.id === campaign.id);
     if (index !== -1) this.campaigns[index] = campaign;
     else this.campaigns.push(campaign);
+  }
+
+  setSelectedCampaign(id) {
+    this.selectedCampaignId = id;
   }
 }
