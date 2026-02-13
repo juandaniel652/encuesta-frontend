@@ -1,4 +1,4 @@
-/*Sector campañas*/
+/* Sector campañas */
 
 export function createCampaignHandlers(controller) {
   return {

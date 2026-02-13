@@ -1,57 +1,69 @@
 export function createQuestionHandlers(controller) {
   return {
 
-    async handleQuestionUpdate(questionId, updates) {
+    async handleOptionUpdate(optionId, updates) {
       const campaign = controller.state.getSelectedCampaign();
 
-      await controller.api.updateQuestion(questionId, updates);
+      const question = campaign.questions.find(q =>
+        q.options.some(o => o.id === optionId)
+      );
 
-      const freshCampaign = await controller.api.getCampaignById(campaign.id);
+      const option = question.options.find(o => o.id === optionId);
+      option.text = updates.text;
 
-      controller.state.setCampaign(freshCampaign);
-      controller.state.setSelectedCampaign(freshCampaign.id);
+      await controller.api.updateQuestionOption(optionId, updates);
 
-      controller.renderEditor(freshCampaign);
-    },
-
-
-
-
-    async handleAddQuestion(campaignId) {
-      const campaign = controller.state.getSelectedCampaign();
-        
-      const created = await controller.api.createQuestion({
-        campaign_id: campaignId,
-        text: 'Nueva pregunta',
-        type: 'text',
-        position: campaign.questions.length + 1
-      });
-    
-      const freshCampaign = await controller.api.getCampaignById(campaignId);
-    
-      controller.state.setCampaign(freshCampaign);
-      controller.state.setSelectedCampaign(freshCampaign.id);
-    
-      controller.renderEditor(freshCampaign);
-    },
-
-
-    async handleAddOption(questionId) {
-      const campaign = controller.state.getSelectedCampaign();
-
-      // 1. Crear en backend
-      await controller.api.createQuestionOption({
-        question_id: questionId,
-        text: 'Nueva opción'
-      });
-    
-      // 2. Rehidratar estado real
       const freshCampaign = await controller.api.getCampaignById(campaign.id);
       controller.state.setSelectedCampaign(freshCampaign);
       controller.renderEditor(freshCampaign);
+    },
+
+    async handleAddQuestion(campaignId) {
+      const campaign = controller.state.getSelectedCampaign();
+
+      const tempId = 'q_' + crypto.randomUUID();
+
+      const tempQuestion = new Question({
+        id: tempId,
+        campaign_id: campaignId,
+        text: 'Nueva pregunta',
+        type: 'text',
+        position: campaign.questions.length + 1,
+        is_active: true,
+        options: []
+      });
+
+      campaign.questions.push(tempQuestion);
+      controller.renderEditor(campaign);
+
+      const created = await controller.api.createQuestion({
+        campaign_id: campaignId,
+        text: tempQuestion.text,
+        type: tempQuestion.type,
+        position: tempQuestion.position
+      });
+
+      const q = campaign.questions.find(q => q.id === tempId);
+      if (q) q.id = created.id;
+
+      controller.renderEditor(campaign);
+    },
+
+    // 🔥 ACÁ VA
+    async handleDeleteQuestion(questionId) {
+      const campaign = controller.state.getSelectedCampaign();
+
+      // 1. Backend
+      await controller.api.deleteQuestion(questionId);
+
+      // 2. Estado local (fuente de verdad)
+      campaign.questions = campaign.questions.filter(
+        q => q.id !== questionId
+      );
+
+      // 3. Render inmediato
+      controller.renderEditor(campaign);
     }
-
-
 
   };
 }
