@@ -31,7 +31,7 @@ export function createQuestionHandlers(controller) {
 
       // refrescar desde backend
       const fresh = await controller.api.getCampaignById(campaign.id);
-      controller.state.setCampaign(fresh);
+      controller.state.setSelectedCampaign(fresh);
       controller.renderEditor(fresh);
     },
 

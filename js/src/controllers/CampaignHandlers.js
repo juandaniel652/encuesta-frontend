@@ -28,7 +28,7 @@ export function createCampaignHandlers(controller) {
 
       const raw = await controller.api.getCampaignById(campaign.id);
       const fresh = controller.models.Campaign.fromJSON(raw);
-      controller.state.setCampaign(fresh);
+      controller.state.setSelectedCampaign(fresh);
       controller.renderEditor(fresh);
     }
   };

@@ -276,16 +276,25 @@ export class CampaignEditorView {
         `;
 
         // eliminar opción
-        row.querySelector('.btn-del-opt').addEventListener('click', () => {
+        row.querySelector('.btn-del-opt').addEventListener('click', async () => {
           option.is_active = false;
-          this.callbacks.onQuestionUpdate(question.id);
+        
+          await this.callbacks.onOptionUpdate(
+            option.id,
+            { is_active: false }
+          );
+        
           this._renderQuestionOptions(question, campaign, container);
         });
 
 
+
         // editar opción
         row.querySelector('.opt-text').addEventListener('change', (e) => {
-          this.callbacks.onOptionUpdate(question.id, option.id, e.target.value);
+          tthis.callbacks.onOptionUpdate(
+            option.id,
+            { text: e.target.value }
+          );
         });
 
         container.appendChild(row);
