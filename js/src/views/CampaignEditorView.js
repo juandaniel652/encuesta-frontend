@@ -260,6 +260,8 @@ export class CampaignEditorView {
       .filter(o => o.is_active !== false)
       .forEach((option, index) => {
 
+        console.log("OPTIONS CRUDAS:", question.options);
+
         if (!option.id) {
           throw new Error("Option sin ID. Estado corrupto.");
         }
