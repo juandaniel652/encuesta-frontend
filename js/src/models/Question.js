@@ -5,7 +5,10 @@ export class Question {
     this.type = data.type || QUESTION_TYPES.SINGLE;
 
     // SOLO lo que venga del backend
-    this.options = Array.isArray(data.options) ? data.options : [];
+    this.options = Array.isArray(data.options)
+    ? data.options
+    : [];
+
   }
 
   // 🔥 NO usar más
