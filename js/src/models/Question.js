@@ -25,7 +25,8 @@ export class Question {
       type: data.type,
       options: rawOptions.map(o => ({
         id: o.id,
-        text: o.text
+        text: o.text,
+        is_active: o.is_active
       }))
     });
   }
