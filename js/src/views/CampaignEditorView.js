@@ -240,11 +240,10 @@ export class CampaignEditorView {
     });
 
 
-    inner.querySelector('.btn-delete-q').addEventListener('click', () => {
-      question.is_active = false;
-      this.callbacks.onQuestionUpdate(question.id);
-      this.render(campaign);
+    inner.querySelector('.btn-delete-q').addEventListener('click', async () => {
+      await this.callbacks.onQuestionDelete(question.id);
     });
+
 
     return card;
     }
