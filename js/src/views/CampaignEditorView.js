@@ -289,9 +289,6 @@ export class CampaignEditorView {
       });
   }
 
-
-
-
   /**
    * Maneja el guardado de campaña
    * @private

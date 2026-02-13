@@ -3,7 +3,10 @@ export function createQuestionHandlers(controller) {
 
     async handleOptionUpdate(optionId, updates) {
       const campaign = controller.state.getSelectedCampaign();
-        
+      
+      console.log("OPTIONS:", campaign.questions.map(q => q.options));
+      console.log("BUSCANDO:", optionId);
+
       const question = campaign.questions.find(q =>
         q.options.some(o => o.id === optionId)
       );
@@ -23,8 +26,9 @@ export function createQuestionHandlers(controller) {
       option.text = updates.text;
     
       await controller.api.updateQuestionOption(optionId, updates);
-    
-      controller.renderEditor(campaign);
+      const freshCampaign = await controller.api.getCampaignById(campaign.id);
+      controller.state.setSelectedCampaign(freshCampaign);
+      controller.renderEditor(freshCampaign);
     },
 
 
