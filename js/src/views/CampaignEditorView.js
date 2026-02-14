@@ -241,7 +241,9 @@ export class CampaignEditorView {
 
 
     inner.querySelector('.btn-delete-q').addEventListener('click', async () => {
+      question.is_active = false;  // 🔹 marcar como inactiva
       await this.callbacks.onQuestionDelete(question.id);
+      this._createQuestionsArea(campaign); // 🔹 re-render del área
     });
 
 
@@ -329,16 +331,16 @@ export class CampaignEditorView {
 
   // 🔹 Filtramos solo preguntas activas
   const activeQuestions = campaign.questions
-    .filter(q => q.is_active !== false)
-    .map(q => ({
-      ...q,
-      options: q.options?.filter(o => o.is_active !== false) || []
-    }));
+  .filter(q => q.is_active !== false)
+  .map(q => ({
+    ...q,
+    options: q.options?.filter(o => o.is_active !== false) || []
+  }));
 
-  console.log("Payload real:", updates);
   this.callbacks.onSave(campaign.id, {
     campaign: updates,
     questions: activeQuestions
   });
+
   }
 }
