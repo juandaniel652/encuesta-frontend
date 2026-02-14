@@ -59,8 +59,14 @@ export async function saveCampaignFull(baseURL, id, payload) {
 }
 
 export async function deleteCampaign(baseURL, id) {
-  const res = await fetch(`${baseURL}/api/campaigns/${id}`, {
+  const res = await fetch(`${baseURL}/campaigns/${id}`, {
     method: 'DELETE'
   });
-  return res.json();
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+
+  return res.status === 204 ? true : await res.json();
 }
