@@ -67,6 +67,24 @@ export function createQuestionHandlers(controller) {
       // DOM
       const card = document.querySelector(`.question-card[data-id='${questionId}']`);
       if (card) card.remove();
-    }
+    },
+
+    async handleOptionCreate(questionId, text) {
+      const campaign = controller.state.getSelectedCampaign();
+
+      const newOption = await controller.api.createQuestionOption({
+        question_id: questionId,
+        text
+      });
+    
+      // actualizar modelo local
+      const question = campaign.questions.find(q => q.id === questionId);
+      question.options.push(newOption);
+    
+      controller.renderEditor(campaign);
+  }
+
+
+
   };
 }
