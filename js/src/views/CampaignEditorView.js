@@ -1,24 +1,15 @@
-/**
- * Campaign Editor View
- * Vista para editar campañas
- */
-
 import { escapeHtml } from '../utils/helpers.js';
 import { CLIENT_TYPES } from '../config/constants.js';
+import { renderClientTypeSelection } from './editorView/clientTypeSelection.js';
+import { createCampaignForm } from './editorView/campaignForm.js';
+import { createQuestionsArea } from './editorView/questionsArea.js';
 
-/**
- * Clase para renderizar el editor de campañas
- */
 export class CampaignEditorView {
   constructor(container, callbacks) {
     this.container = container;
     this.callbacks = callbacks;
   }
 
-  /**
-   * Renderiza el editor de campaña
-   * @param {Campaign|null} campaign - Campaña a editar
-   */
   render(campaign) {
     if (!campaign) {
       this._renderEmptyState();
@@ -33,58 +24,17 @@ export class CampaignEditorView {
     this._renderEditor(campaign);
   }
 
-  /**
-   * Renderiza la selección de tipo de campaña
-   * @param {Function} onSelect - Callback cuando se selecciona un tipo
-   */
   renderClientTypeSelection(onSelect) {
-    this.container.innerHTML = '';
-    const element = document.createElement('div');
-    element.style.maxWidth = '600px';
-    element.style.margin = '40px auto';
-    element.style.textAlign = 'center';
-
-    element.innerHTML = `
-      <h3>Nueva Campaña</h3>
-      <p class="small" style="margin-bottom:30px">Seleccioná el tipo de campaña que querés crear:</p>
-      <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
-        <button id="btnWithClients" class="btn btn-primary" style="padding:20px 30px;font-size:16px">
-          Con base de clientes
-        </button>
-        <button id="btnWithoutClients" class="btn btn-primary" style="padding:20px 30px;font-size:16px">
-          Sin base de clientes
-        </button>
-      </div>
-      <div style="margin-top:20px">
-        <button id="btnCancelType" class="btn btn-ghost">Cancelar</button>
-      </div>
-    `;
-
-    this.container.appendChild(element);
-
-    document.getElementById('btnWithClients').addEventListener('click', 
-      () => onSelect(CLIENT_TYPES.WITH_CLIENTS));
-    
-    document.getElementById('btnWithoutClients').addEventListener('click', 
-      () => onSelect(CLIENT_TYPES.WITHOUT_CLIENTS));
-    
-    document.getElementById('btnCancelType').addEventListener('click', 
-      () => this._renderEmptyState());
+    renderClientTypeSelection(this.container, {
+      onSelect,
+      onCancel: () => this._renderEmptyState()
+    });
   }
 
-  /**
-   * Renderiza estado vacío
-   * @private
-   */
   _renderEmptyState() {
-    this.container.innerHTML = 
-      '<p class="small">Seleccioná una campaña para ver o editar sus preguntas, o crea una nueva.</p>';
+    this.container.innerHTML = '<p class="small">Seleccioná una campaña para ver o editar sus preguntas, o crea una nueva.</p>';
   }
 
-  /**
-   * Renderiza mensaje para campañas con clientes
-   * @private
-   */
   _renderWithClientsMessage(campaign) {
     this.container.innerHTML = '';
     const wrapper = document.createElement('div');
@@ -102,266 +52,14 @@ export class CampaignEditorView {
     `;
 
     this.container.appendChild(wrapper);
-
-    document.getElementById('deleteCampaignSimple').addEventListener('click', 
-      () => this.callbacks.onDelete(campaign.id));
+    document.getElementById('deleteCampaignSimple').addEventListener('click', () => this.callbacks.onDelete(campaign.id));
   }
 
-  /**
-   * Renderiza el editor completo
-   * @private
-   */
   _renderEditor(campaign) {
     this.container.innerHTML = '';
     const wrapper = document.createElement('div');
-
-    const form = this._createCampaignForm(campaign);
-    const questionsArea = this._createQuestionsArea(campaign);
-
-    wrapper.appendChild(form);
-    wrapper.appendChild(questionsArea);
-
+    wrapper.appendChild(createCampaignForm(campaign, this.callbacks));
+    wrapper.appendChild(createQuestionsArea(campaign, { ...this.callbacks, onRerenderQuestions: this._renderEditor.bind(this) }));
     this.container.appendChild(wrapper);
-  }
-
-  /**
-   * Crea el formulario de información de campaña
-   * @private
-   */
-  _createCampaignForm(campaign) {
-    const form = document.createElement('div');
-    
-    const startVal = campaign.dateStart ? 
-      new Date(campaign.dateStart).toISOString().slice(0, 10) : '';
-    const endVal = campaign.dateEnd ? 
-      new Date(campaign.dateEnd).toISOString().slice(0, 10) : '';
-
-    form.innerHTML = `
-      <div class="row">
-        <div class="col flex-1">
-          <label>Nombre</label>
-          <input type="text" id="campName" value="${escapeHtml(campaign.name)}" />
-        </div>
-        <div class="col col-date">
-          <label>Fecha inicio</label>
-          <input type="date" id="campStart" value="${startVal}" />
-        </div>
-        <div class="col col-date">
-          <label>Fecha fin</label>
-          <input type="date" id="campEnd" value="${endVal}" />
-        </div>
-      </div>
-      <div class="row">
-        <button id="saveCampaignBtn" class="btn btn-primary">Guardar/Modificar campaña</button>
-        <button id="duplicateBtn" class="btn btn-ghost">Duplicar</button>
-        <button id="deleteCampaignBtn" class="btn btn-ghost">Eliminar</button>
-      </div>
-    `;
-
-    // Event listeners
-    form.querySelector('#saveCampaignBtn').addEventListener('click', 
-      () => this._handleSaveCampaign(campaign));
-    
-    form.querySelector('#duplicateBtn').addEventListener('click', 
-      () => this.callbacks.onDuplicate(campaign.id));
-    
-    form.querySelector('#deleteCampaignBtn').addEventListener('click', 
-      () => this.callbacks.onDelete(campaign.id));
-
-    return form;
-  }
-
-  /**
-   * Crea el área de preguntas
-   * @private
-   */
-  _createQuestionsArea(campaign) {
-    const area = document.createElement('div');
-    area.innerHTML = '<h4>Preguntas</h4>';
-
-    const questionsList = document.createElement('div');
-    questionsList.className = 'questions-list';
-
-    campaign.questions
-    .filter(q => q.is_active !== false)
-    .forEach(question => {
-      const questionCard = this._createQuestionCard(question, campaign);
-      questionsList.appendChild(questionCard);
-    });
-
-
-    const addButton = document.createElement('div');
-    addButton.style.marginTop = '10px';
-    addButton.innerHTML = '<button id="addQuestionBtn" class="btn btn-primary">+ Añadir pregunta</button>';
-    
-    addButton.querySelector('#addQuestionBtn').addEventListener('click', 
-      () => this.callbacks.onAddQuestion(campaign.id));
-
-    area.appendChild(questionsList);
-    area.appendChild(addButton);
-
-    return area;
-  }
-
-  /**
- * Crea una tarjeta de pregunta
- * @private
- */
-  _createQuestionCard(question, campaign) {
-    const card = document.createElement('div');
-    card.className = 'question-card';
-
-    const inner = document.createElement('div');
-    inner.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <input type="text" class="q-text" value="${escapeHtml(question.text)}" 
-               style="font-weight:600;border:0;background:transparent" />
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost btn-add-option">+ opt</button>
-          <button class="btn btn-ghost btn-delete-q">Eliminar</button>
-        </div>
-      </div>
-      <div class="options"></div>
-    `;
-
-    card.appendChild(inner);
-
-    const optionsContainer = inner.querySelector('.options');
-
-    // 🔹 Render inicial de opciones
-    question.options
-      .filter(o => o.is_active !== false)
-      .forEach(option => {
-        const row = document.createElement('div');
-        row.className = 'option-item';
-        row.dataset.optionId = option.id; // identificador para delegación
-        row.innerHTML = `
-          <input class="opt-text" type="text" value="${escapeHtml(option.text)}" />
-          <button class="btn btn-ghost btn-del-opt">Eliminar</button>
-        `;
-        optionsContainer.appendChild(row);
-      });
-
-    // 🔹 Delegación de eventos (solo 1 listener por contenedor)
-    if (!optionsContainer.dataset.listenersAttached) {
-      optionsContainer.addEventListener('click', async (e) => {
-        if (e.target.classList.contains('btn-del-opt')) {
-          const row = e.target.closest('.option-item');
-          const optionId = row.dataset.optionId;
-          const option = question.options.find(o => o.id === optionId);
-
-          if (!option) return;
-
-          option.is_active = false;
-          await this.callbacks.onOptionUpdate(option.id, { is_active: false });
-
-          row.remove(); // eliminamos del DOM
-        }
-      });
-
-      optionsContainer.addEventListener('change', (e) => {
-        if (e.target.classList.contains('opt-text')) {
-          const row = e.target.closest('.option-item');
-          const optionId = row.dataset.optionId;
-          const option = question.options.find(o => o.id === optionId);
-
-          if (!option) return;
-
-          this.callbacks.onOptionUpdate(option.id, { text: e.target.value });
-        }
-      });
-
-      optionsContainer.dataset.listenersAttached = 'true';
-    }
-
-    // Event listeners de la tarjeta
-    inner.querySelector('.q-text').addEventListener('change', (e) => {
-      question.text = e.target.value;
-      this.callbacks.onQuestionUpdate(question.id);
-    });
-
-    inner.querySelector('.btn-add-option').addEventListener('click', () => {
-      this.callbacks.onOptionCreate(question.id, 'Nueva opción');
-    });
-
-    inner.querySelector('.btn-delete-q').addEventListener('click', async () => {
-      question.is_active = false;
-      await this.callbacks.onQuestionDelete(question.id);
-      this._createQuestionsArea(campaign); // re-render del área de preguntas
-    });
-
-    return card;
-  }
-
-  /**
-   * Renderiza las opciones de una pregunta
-   * (ya se maneja dentro de la delegación de eventos en _createQuestionCard)
-   * @private
-   */
-  _renderQuestionOptions(question, campaign, container) {
-    // 🔹 Este método ahora solo renderiza las filas iniciales de opciones
-    container.innerHTML = '';
-
-    question.options
-      .filter(o => o.is_active !== false)
-      .forEach(option => {
-        const row = document.createElement('div');
-        row.className = 'option-item';
-        row.dataset.optionId = option.id;
-        row.innerHTML = `
-          <input class="opt-text" type="text" value="${escapeHtml(option.text)}" />
-          <button class="btn btn-ghost btn-del-opt">Eliminar</button>
-        `;
-        container.appendChild(row);
-      });
-    // 🔹 No se agregan listeners aquí; se manejan en _createQuestionCard por delegación
-  }
-
-
-  /**
-   * Maneja el guardado de campaña
-   * @private
-   */
-  _handleSaveCampaign(campaign) {
-    const name = document.getElementById('campName').value.trim();
-    const start = document.getElementById('campStart').value;
-    const end = document.getElementById('campEnd').value;
-    const clientType = campaign.clientType;
-    
-    if (!name) {
-      alert('El nombre es obligatorio.');
-      return;
-    }
-  
-    if (!clientType) {
-      alert('El tipo de cliente es obligatorio.');
-      return;
-    }
-  
-    const updates = {
-      name,
-      client_type: clientType,
-      date_start: start ? new Date(start).toISOString() : null,
-      date_end: end ? new Date(end).toISOString() : null
-    };
-  
-    // 🔹 Mapear preguntas y opciones para que el backend distinga update vs insert
-    const mappedQuestions = campaign.questions.map(q => ({
-      id: q.id || null,              // si no tiene id, el backend sabe que es nueva
-      text: q.text,
-      type: q.type,
-      is_active: q.is_active,
-      position: q.position,
-      options: q.options?.map(o => ({
-        id: o.id || null,            // si no tiene id → nueva opción
-        text: o.text,
-        is_active: o.is_active
-      })) || []
-    }));
-  
-    this.callbacks.onSave(campaign.id, {
-      campaign: updates,
-      questions: mappedQuestions
-    });
   }
 }
