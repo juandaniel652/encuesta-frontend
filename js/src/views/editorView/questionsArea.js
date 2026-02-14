@@ -10,17 +10,11 @@ export function createQuestionsArea(campaign, callbacks) {
   campaign.questions
     .filter(q => q.isActive !== false)
     .forEach(question => {
-      const card = createQuestionCard(question, campaign, {
-        ...callbacks,
-        onRenderQuestionsArea: (camp) => {
-          // 🔹 Limpiar y volver a renderizar
-          const newArea = createQuestionsArea(camp, callbacks);
-          area.innerHTML = '';
-          area.appendChild(newArea);
-        }
-      });
+      const card = createQuestionCard(question, campaign, callbacks);
       questionsList.appendChild(card);
     });
+
+  area.appendChild(questionsList);
 
   const addButton = document.createElement('div');
   addButton.style.marginTop = '10px';
@@ -30,7 +24,6 @@ export function createQuestionsArea(campaign, callbacks) {
     callbacks.onAddQuestion(campaign.id);
   });
 
-  area.appendChild(questionsList);
   area.appendChild(addButton);
 
   return area;

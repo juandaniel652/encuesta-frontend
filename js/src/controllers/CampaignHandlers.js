@@ -1,5 +1,3 @@
-/* Sector campañas */
-
 export function createCampaignHandlers(controller) {
   return {
     async handleCampaignSelect(campaignId) {
@@ -15,8 +13,8 @@ export function createCampaignHandlers(controller) {
     async handleCampaignSave(campaignId, updates) {
       const campaign = controller.state.getSelectedCampaign();
       campaign.update(updates);
-        
-      // 🔹 Mapear preguntas activas y sus opciones activas
+
+      // 🔹 Solo preguntas activas
       const payload = {
         campaign: {
           name: campaign.name,
@@ -25,7 +23,7 @@ export function createCampaignHandlers(controller) {
           date_end: campaign.dateEnd
         },
         questions: campaign.questions
-          .filter(q => q.isActive !== false)        // solo preguntas activas
+          .filter(q => q.isActive !== false)
           .map(q => ({
             id: q.id || null,
             text: q.text,
@@ -33,7 +31,7 @@ export function createCampaignHandlers(controller) {
             is_active: q.isActive,
             position: q.position,
             options: q.options
-              ?.filter(o => o.isActive !== false)   // solo opciones activas
+              ?.filter(o => o.isActive !== false)
               .map(o => ({
                 id: o.id || null,
                 text: o.text,
@@ -41,19 +39,16 @@ export function createCampaignHandlers(controller) {
               })) || []
           }))
       };
-    
-      // 🔹 Convertir a JSON plano para evitar prototipos
+
       const payloadToSend = JSON.parse(JSON.stringify(payload));
-    
-      // 🔹 Llamada al endpoint modular
+
       await controller.api.saveCampaignFull(campaign.id, payloadToSend);
-    
-      // 🔹 Refrescar estado desde backend
+
+      // 🔹 Refrescar solo estado desde backend
       const raw = await controller.api.getCampaignById(campaign.id);
       const fresh = controller.models.Campaign.fromJSON(raw);
       controller.state.setSelectedCampaign(fresh);
       controller.renderEditor(fresh);
     }
-
   };
 }

@@ -1,43 +1,27 @@
 export function createQuestionHandlers(controller) {
   return {
-
     async handleOptionUpdate(optionId, updates) {
       const campaign = controller.state.getSelectedCampaign();
-
-      const question = campaign.questions.find(q =>
-        q.options.some(o => o.id === optionId)
-      );
-
+      const question = campaign.questions.find(q => q.options.some(o => o.id === optionId));
       const option = question.options.find(o => o.id === optionId);
       option.text = updates.text;
 
       await controller.api.updateQuestionOption(optionId, updates);
-
-      const freshCampaign = await controller.api.getCampaignById(campaign.id);
-      controller.state.setSelectedCampaign(freshCampaign);
-      controller.renderEditor(freshCampaign);
     },
 
     async handleQuestionUpdate(questionId) {
       const campaign = controller.state.getSelectedCampaign();
       const question = campaign.questions.find(q => q.id === questionId);
 
-      // mandar la pregunta entera al backend
       await controller.api.updateQuestion(questionId, {
         text: question.text,
         type: question.type,
         options: question.options
       });
-
-      // refrescar desde backend
-      const fresh = await controller.api.getCampaignById(campaign.id);
-      controller.state.setSelectedCampaign(fresh);
-      controller.renderEditor(fresh);
     },
 
     async handleAddQuestion(campaignId) {
       const campaign = controller.state.getSelectedCampaign();
-
       const tempId = 'q_' + crypto.randomUUID();
 
       const tempQuestion = new Question({
@@ -50,9 +34,17 @@ export function createQuestionHandlers(controller) {
         options: []
       });
 
+      // ✅ Agregar a fuente de verdad
       campaign.questions.push(tempQuestion);
-      controller.renderEditor(campaign);
 
+      // 🔹 Render solo la nueva tarjeta
+      const questionsList = document.querySelector('.questions-list');
+      if (questionsList) {
+        const card = createQuestionCard(tempQuestion, campaign, controller.callbacks);
+        questionsList.appendChild(card);
+      }
+
+      // 🔹 Guardar en backend
       const created = await controller.api.createQuestion({
         campaign_id: campaignId,
         text: tempQuestion.text,
@@ -60,27 +52,21 @@ export function createQuestionHandlers(controller) {
         position: tempQuestion.position
       });
 
-      const q = campaign.questions.find(q => q.id === tempId);
-      if (q) q.id = created.id;
-
-      controller.renderEditor(campaign);
+      tempQuestion.id = created.id;
     },
 
-    // 🔥 ACÁ VA
     async handleDeleteQuestion(questionId) {
       const campaign = controller.state.getSelectedCampaign();
 
-      // 1. Backend
+      // Backend
       await controller.api.deleteQuestion(questionId);
 
-      // 2. Estado local (fuente de verdad)
-      campaign.questions = campaign.questions.filter(
-        q => q.id !== questionId
-      );
+      // ✅ Actualizar fuente de verdad
+      campaign.questions = campaign.questions.filter(q => q.id !== questionId);
 
-      // 3. Render inmediato
-      controller.renderEditor(campaign);
+      // DOM
+      const card = document.querySelector(`.question-card[data-id='${questionId}']`);
+      if (card) card.remove();
     }
-
   };
 }
