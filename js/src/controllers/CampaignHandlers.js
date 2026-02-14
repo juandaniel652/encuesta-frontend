@@ -15,8 +15,9 @@ export function createCampaignHandlers(controller) {
     async handleCampaignSave(campaignId, updates) {
       const campaign = controller.state.getSelectedCampaign();
       campaign.update(updates);
-
-      await controller.api.saveCampaignFull(campaign.id, {
+        
+      // 🔹 Mapear preguntas activas y sus opciones activas
+      const payload = {
         campaign: {
           name: campaign.name,
           client_type: campaign.clientType,
@@ -24,12 +25,35 @@ export function createCampaignHandlers(controller) {
           date_end: campaign.dateEnd
         },
         questions: campaign.questions
-      });
-
+          .filter(q => q.isActive !== false)        // solo preguntas activas
+          .map(q => ({
+            id: q.id || null,
+            text: q.text,
+            type: q.type,
+            is_active: q.isActive,
+            position: q.position,
+            options: q.options
+              ?.filter(o => o.isActive !== false)   // solo opciones activas
+              .map(o => ({
+                id: o.id || null,
+                text: o.text,
+                is_active: o.isActive
+              })) || []
+          }))
+      };
+    
+      // 🔹 Convertir a JSON plano para evitar prototipos
+      const payloadToSend = JSON.parse(JSON.stringify(payload));
+    
+      // 🔹 Llamada al endpoint modular
+      await controller.api.saveCampaignFull(campaign.id, payloadToSend);
+    
+      // 🔹 Refrescar estado desde backend
       const raw = await controller.api.getCampaignById(campaign.id);
       const fresh = controller.models.Campaign.fromJSON(raw);
       controller.state.setSelectedCampaign(fresh);
       controller.renderEditor(fresh);
     }
+
   };
 }

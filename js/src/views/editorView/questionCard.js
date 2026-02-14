@@ -66,10 +66,15 @@ export function createQuestionCard(question, campaign, callbacks) {
   inner.querySelector('.btn-add-option').addEventListener('click', () => callbacks.onOptionCreate(question.id, 'Nueva opción'));
 
   inner.querySelector('.btn-delete-q').addEventListener('click', async () => {
-    question.is_active = false;
-    await callbacks.onQuestionDelete(question.id);
-    callbacks.onRerenderQuestions(campaign);
-  });
+      question.isActive = false;
+      await this.callbacks.onQuestionDelete(question.id);
+    
+      // 🔹 Opcional: eliminar del array para evitar confusión en UI
+      const index = campaign.questions.findIndex(q => q.id === question.id);
+      if (index > -1) campaign.questions.splice(index, 1);
+    
+      this._createQuestionsArea(campaign); // re-render
+    });
 
   return card;
 }
