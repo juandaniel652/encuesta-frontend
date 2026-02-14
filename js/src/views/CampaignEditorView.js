@@ -323,40 +323,45 @@ export class CampaignEditorView {
    * @private
    */
   _handleSaveCampaign(campaign) {
-  const name = document.getElementById('campName').value.trim();
-  const start = document.getElementById('campStart').value;
-  const end = document.getElementById('campEnd').value;
-  const clientType = campaign.clientType;
-
-  if (!name) {
-    alert('El nombre es obligatorio.');
-    return;
-  }
-
-  if (!clientType) {
-    alert('El tipo de cliente es obligatorio.');
-    return;
-  }
-
-  const updates = {
-    name,
-    client_type: clientType,
-    date_start: start ? new Date(start).toISOString() : null,
-    date_end: end ? new Date(end).toISOString() : null
-  };
-
-  // 🔹 Filtramos solo preguntas activas
-  const activeQuestions = campaign.questions
-  .filter(q => q.is_active !== false)
-  .map(q => ({
-    ...q,
-    options: q.options?.filter(o => o.is_active !== false) || []
-  }));
-
-  this.callbacks.onSave(campaign.id, {
-    campaign: updates,
-    questions: activeQuestions
-  });
-
+    const name = document.getElementById('campName').value.trim();
+    const start = document.getElementById('campStart').value;
+    const end = document.getElementById('campEnd').value;
+    const clientType = campaign.clientType;
+    
+    if (!name) {
+      alert('El nombre es obligatorio.');
+      return;
+    }
+  
+    if (!clientType) {
+      alert('El tipo de cliente es obligatorio.');
+      return;
+    }
+  
+    const updates = {
+      name,
+      client_type: clientType,
+      date_start: start ? new Date(start).toISOString() : null,
+      date_end: end ? new Date(end).toISOString() : null
+    };
+  
+    // 🔹 Mapear preguntas y opciones para que el backend distinga update vs insert
+    const mappedQuestions = campaign.questions.map(q => ({
+      id: q.id || null,              // si no tiene id, el backend sabe que es nueva
+      text: q.text,
+      type: q.type,
+      is_active: q.is_active,
+      position: q.position,
+      options: q.options?.map(o => ({
+        id: o.id || null,            // si no tiene id → nueva opción
+        text: o.text,
+        is_active: o.is_active
+      })) || []
+    }));
+  
+    this.callbacks.onSave(campaign.id, {
+      campaign: updates,
+      questions: mappedQuestions
+    });
   }
 }
