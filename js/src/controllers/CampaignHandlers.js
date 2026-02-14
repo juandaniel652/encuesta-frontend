@@ -8,6 +8,9 @@ export function createCampaignHandlers(controller) {
 
       controller.state.setCampaign(campaign);
       controller.renderEditor(campaign);
+
+      document.getElementById("btnRunCampaign").disabled = false;
+      document.getElementById("btnViewResponses").disabled = false;
     },
 
     async handleCampaignSave(campaignId, updates) {
@@ -52,16 +55,16 @@ export function createCampaignHandlers(controller) {
     // 🔥 ESTE NO EXISTÍA
     async handleCampaignDelete(campaignId) {
       console.log('BORRANDO CAMPAÑA:', campaignId);
-        
+
       await controller.api.deleteCampaign(campaignId);
-        
+
       // 🔹 eliminar del estado local
       controller.state.campaigns = controller.state.campaigns
         .filter(c => c.id !== campaignId);
-        
+
       // 🔹 limpiar selección
       controller.state.selectedCampaignId = null;
-        
+
       // 🔹 re-render global
       controller.render();
       controller.campaignEditorView.render(null);

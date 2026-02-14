@@ -51,6 +51,13 @@ export class AppController {
   }
 
   initializeViews() {
+
+    const btnRun = document.getElementById("btnRunCampaign");
+    btnRun.addEventListener("click", this.handleRunCampaign.bind(this));
+
+    const btnResponses = document.getElementById("btnViewResponses");
+    btnResponses.addEventListener("click", this.handleViewResponses.bind(this));
+
     this.campaignListView = new CampaignListView(
       document.getElementById('campaignList'),
       this.handleCampaignSelect
