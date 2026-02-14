@@ -12,11 +12,13 @@ export function createResponseHandlers(controller) {
     },
 
     async handleViewResponses() {
-      alert('Vista de respuestas pendiente de endpoint backend.');
-      // cuando exista:
-      // const data = await controller.api.getResponsesByCampaign(id)
-      // controller.responsesView.render(data)
+      const campaign = controller.state.getSelectedCampaign();
+      if (!campaign) return;
+        
+      const stats = await controller.api.getResponsesByCampaign(campaign.id);
+      controller.responsesView.render(stats, campaign);
     },
+
 
     handleResponsesBack() {
       const campaign = controller.state.getSelectedCampaign();
