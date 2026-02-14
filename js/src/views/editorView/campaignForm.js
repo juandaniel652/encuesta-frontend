@@ -42,8 +42,16 @@ export function createCampaignForm(campaign, callbacks = {}) {
   `;
 
   // 🔹 Ahora usamos las funciones seguras
-  form.querySelector('#saveCampaignBtn')
-    .addEventListener('click', () => onSave(campaign));
+  form.querySelector('#saveCampaignBtn').addEventListener('click', () => {
+    const updates = {
+      name: document.getElementById('campName').value.trim(),
+      dateStart: document.getElementById('campStart').value || null,
+      dateEnd: document.getElementById('campEnd').value || null
+    };
+  
+    onSave(campaign.id, updates);
+  });
+
 
   form.querySelector('#duplicateBtn')
     .addEventListener('click', () => onDuplicate(campaign.id));
