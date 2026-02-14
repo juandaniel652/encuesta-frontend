@@ -58,3 +58,9 @@ export async function saveCampaignFull(baseURL, id, payload) {
   return res.json();
 }
 
+export async function deleteCampaign(baseURL, id) {
+  const res = await fetch(`${baseURL}/api/campaigns/${id}`, {
+    method: 'DELETE'
+  });
+  return res.json();
+}

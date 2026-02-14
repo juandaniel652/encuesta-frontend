@@ -14,7 +14,6 @@ export function createCampaignHandlers(controller) {
       const campaign = controller.state.getSelectedCampaign();
       campaign.update(updates);
 
-      // 🔹 Solo preguntas activas
       const payload = {
         campaign: {
           name: campaign.name,
@@ -44,11 +43,28 @@ export function createCampaignHandlers(controller) {
 
       await controller.api.saveCampaignFull(campaign.id, payloadToSend);
 
-      // 🔹 Refrescar solo estado desde backend
       const raw = await controller.api.getCampaignById(campaign.id);
       const fresh = controller.models.Campaign.fromJSON(raw);
       controller.state.setSelectedCampaign(fresh);
       controller.renderEditor(fresh);
+    },
+
+    // 🔥 ESTE NO EXISTÍA
+    async handleCampaignDelete(campaignId) {
+      console.log('DELETE campaignId:', campaignId);
+
+      if (!confirm('¿Seguro que querés eliminar esta campaña?')) return;
+
+      console.log('BORRANDO CAMPAÑA:', campaignId);
+
+      await controller.api.deleteCampaign(campaignId);
+
+      controller.state.campaigns =
+        controller.state.campaigns.filter(c => c.id !== campaignId);
+
+      controller.state.selectedCampaignId = null;
+      controller.renderEditor(null);
+      controller.render();
     }
   };
 }

@@ -16,6 +16,8 @@ class APIService {
   createCampaign(payload) { return campaigns.createCampaign(this.baseURL, payload); }
   updateCampaign(id, payload) { return campaigns.updateCampaign(this.baseURL, id, payload); }
   saveCampaignFull(id, payload) { return campaigns.saveCampaignFull(this.baseURL, id, payload); }
+  deleteCampaign(id) { return campaigns.deleteCampaign(this.baseURL, id); } // 👈 ESTA LÍNEA
+
 
   // 🔹 Questions
   createQuestion(question) { return questions.createQuestion(this.baseURL, question); }
