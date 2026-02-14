@@ -305,33 +305,40 @@ export class CampaignEditorView {
    * @private
    */
   _handleSaveCampaign(campaign) {
-    const name = document.getElementById('campName').value.trim();
-    const start = document.getElementById('campStart').value;
-    const end = document.getElementById('campEnd').value;
-    const clientType = campaign.clientType;
+  const name = document.getElementById('campName').value.trim();
+  const start = document.getElementById('campStart').value;
+  const end = document.getElementById('campEnd').value;
+  const clientType = campaign.clientType;
 
+  if (!name) {
+    alert('El nombre es obligatorio.');
+    return;
+  }
 
-    if (!name) {
-      alert('El nombre es obligatorio.');
-      return;
-    }
+  if (!clientType) {
+    alert('El tipo de cliente es obligatorio.');
+    return;
+  }
 
-    if (!clientType) {
-      alert('El tipo de cliente es obligatorio.');
-      return
-    }
+  const updates = {
+    name,
+    client_type: clientType,
+    date_start: start ? new Date(start).toISOString() : null,
+    date_end: end ? new Date(end).toISOString() : null
+  };
 
-    const updates = {
-      name,
-      client_type: clientType,
-      date_start: start ? new Date(start).toISOString() : null,
-      date_end: end ? new Date(end).toISOString() : null
-    };
+  // 🔹 Filtramos solo preguntas activas
+  const activeQuestions = campaign.questions
+    .filter(q => q.is_active !== false)
+    .map(q => ({
+      ...q,
+      options: q.options?.filter(o => o.is_active !== false) || []
+    }));
 
-    console.log("Payload real:", updates);
-    this.callbacks.onSave(campaign.id, {
-      campaign: updates,
-      questions: campaign.questions
-    });
+  console.log("Payload real:", updates);
+  this.callbacks.onSave(campaign.id, {
+    campaign: updates,
+    questions: activeQuestions
+  });
   }
 }
