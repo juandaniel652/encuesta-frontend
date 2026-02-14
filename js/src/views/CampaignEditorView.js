@@ -292,7 +292,7 @@ export class CampaignEditorView {
 
         // editar opción
         row.querySelector('.opt-text').addEventListener('change', (e) => {
-          tthis.callbacks.onOptionUpdate(
+          this.callbacks.onOptionUpdate(
             option.id,
             { text: e.target.value }
           );
