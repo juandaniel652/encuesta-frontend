@@ -1,11 +1,23 @@
 // Creación del formulario de campaña
 import { escapeHtml } from '../../utils/helpers.js';
 
-export function createCampaignForm(campaign, callbacks) {
+export function createCampaignForm(campaign, callbacks = {}) {
+  // 🔹 Desestructuración defensiva (BLINDA el componente)
+  const {
+    onSave = () => {},
+    onDelete = () => {},
+    onDuplicate = () => {}
+  } = callbacks;
+
   const form = document.createElement('div');
   
-  const startVal = campaign.dateStart ? new Date(campaign.dateStart).toISOString().slice(0, 10) : '';
-  const endVal = campaign.dateEnd ? new Date(campaign.dateEnd).toISOString().slice(0, 10) : '';
+  const startVal = campaign.dateStart 
+    ? new Date(campaign.dateStart).toISOString().slice(0, 10) 
+    : '';
+
+  const endVal = campaign.dateEnd 
+    ? new Date(campaign.dateEnd).toISOString().slice(0, 10) 
+    : '';
 
   form.innerHTML = `
     <div class="row">
@@ -29,9 +41,15 @@ export function createCampaignForm(campaign, callbacks) {
     </div>
   `;
 
-  form.querySelector('#saveCampaignBtn').addEventListener('click', () => callbacks.onSave(campaign));
-  form.querySelector('#duplicateBtn').addEventListener('click', () => callbacks.onDuplicate(campaign.id));
-  form.querySelector('#deleteCampaignBtn').addEventListener('click', () => callbacks.onDelete(campaign.id));
+  // 🔹 Ahora usamos las funciones seguras
+  form.querySelector('#saveCampaignBtn')
+    .addEventListener('click', () => onSave(campaign));
+
+  form.querySelector('#duplicateBtn')
+    .addEventListener('click', () => onDuplicate(campaign.id));
+
+  form.querySelector('#deleteCampaignBtn')
+    .addEventListener('click', () => onDelete(campaign.id));
 
   return form;
 }
