@@ -10,7 +10,15 @@ export function createQuestionsArea(campaign, callbacks) {
   campaign.questions
     .filter(q => q.isActive !== false)
     .forEach(question => {
-      const card = createQuestionCard(question, campaign, callbacks);
+      const card = createQuestionCard(question, campaign, {
+        ...callbacks,
+        onRenderQuestionsArea: (camp) => {
+          // 🔹 Limpiar y volver a renderizar
+          const newArea = createQuestionsArea(camp, callbacks);
+          area.innerHTML = '';
+          area.appendChild(newArea);
+        }
+      });
       questionsList.appendChild(card);
     });
 

@@ -83,6 +83,8 @@ export function createQuestionCard(question, campaign, callbacks) {
     question.isActive = false;
     await callbacks.onQuestionDelete(question.id);
 
+    card.remove();
+
     // 🔹 Opcional: filtrar de campaign.questions
     const index = campaign.questions.findIndex(q => q.id === question.id);
     if (index > -1) campaign.questions.splice(index, 1);
