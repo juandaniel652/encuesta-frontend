@@ -204,9 +204,9 @@ export class CampaignEditorView {
   }
 
   /**
-   * Crea una tarjeta de pregunta
-   * @private
-   */
+ * Crea una tarjeta de pregunta
+ * @private
+ */
   _createQuestionCard(question, campaign) {
     const card = document.createElement('div');
     card.className = 'question-card';
@@ -227,9 +227,54 @@ export class CampaignEditorView {
     card.appendChild(inner);
 
     const optionsContainer = inner.querySelector('.options');
-    this._renderQuestionOptions(question, campaign, optionsContainer);
 
-    // Event listeners
+    // 🔹 Render inicial de opciones
+    question.options
+      .filter(o => o.is_active !== false)
+      .forEach(option => {
+        const row = document.createElement('div');
+        row.className = 'option-item';
+        row.dataset.optionId = option.id; // identificador para delegación
+        row.innerHTML = `
+          <input class="opt-text" type="text" value="${escapeHtml(option.text)}" />
+          <button class="btn btn-ghost btn-del-opt">Eliminar</button>
+        `;
+        optionsContainer.appendChild(row);
+      });
+
+    // 🔹 Delegación de eventos (solo 1 listener por contenedor)
+    if (!optionsContainer.dataset.listenersAttached) {
+      optionsContainer.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('btn-del-opt')) {
+          const row = e.target.closest('.option-item');
+          const optionId = row.dataset.optionId;
+          const option = question.options.find(o => o.id === optionId);
+
+          if (!option) return;
+
+          option.is_active = false;
+          await this.callbacks.onOptionUpdate(option.id, { is_active: false });
+
+          row.remove(); // eliminamos del DOM
+        }
+      });
+
+      optionsContainer.addEventListener('change', (e) => {
+        if (e.target.classList.contains('opt-text')) {
+          const row = e.target.closest('.option-item');
+          const optionId = row.dataset.optionId;
+          const option = question.options.find(o => o.id === optionId);
+
+          if (!option) return;
+
+          this.callbacks.onOptionUpdate(option.id, { text: e.target.value });
+        }
+      });
+
+      optionsContainer.dataset.listenersAttached = 'true';
+    }
+
+    // Event listeners de la tarjeta
     inner.querySelector('.q-text').addEventListener('change', (e) => {
       question.text = e.target.value;
       this.callbacks.onQuestionUpdate(question.id);
@@ -239,68 +284,39 @@ export class CampaignEditorView {
       this.callbacks.onOptionCreate(question.id, 'Nueva opción');
     });
 
-
     inner.querySelector('.btn-delete-q').addEventListener('click', async () => {
-      question.is_active = false;  // 🔹 marcar como inactiva
+      question.is_active = false;
       await this.callbacks.onQuestionDelete(question.id);
-      this._createQuestionsArea(campaign); // 🔹 re-render del área
+      this._createQuestionsArea(campaign); // re-render del área de preguntas
     });
 
-
     return card;
-    }
+  }
 
   /**
    * Renderiza las opciones de una pregunta
+   * (ya se maneja dentro de la delegación de eventos en _createQuestionCard)
    * @private
    */
   _renderQuestionOptions(question, campaign, container) {
+    // 🔹 Este método ahora solo renderiza las filas iniciales de opciones
     container.innerHTML = '';
 
     question.options
       .filter(o => o.is_active !== false)
-      .forEach((option, index) => {
-
-        console.log("OPTIONS CRUDAS:", question.options);
-
-        if (!option.id) {
-          throw new Error("Option sin ID. Estado corrupto.");
-        }
-
-
+      .forEach(option => {
         const row = document.createElement('div');
         row.className = 'option-item';
-
+        row.dataset.optionId = option.id;
         row.innerHTML = `
           <input class="opt-text" type="text" value="${escapeHtml(option.text)}" />
           <button class="btn btn-ghost btn-del-opt">Eliminar</button>
         `;
-
-        // eliminar opción
-        row.querySelector('.btn-del-opt').addEventListener('click', async () => {
-          option.is_active = false;
-        
-          await this.callbacks.onOptionUpdate(
-            option.id,
-            { is_active: false }
-          );
-        
-          this._renderQuestionOptions(question, campaign, container);
-        });
-
-
-
-        // editar opción
-        row.querySelector('.opt-text').addEventListener('change', (e) => {
-          this.callbacks.onOptionUpdate(
-            option.id,
-            { text: e.target.value }
-          );
-        });
-
         container.appendChild(row);
       });
+    // 🔹 No se agregan listeners aquí; se manejan en _createQuestionCard por delegación
   }
+
 
   /**
    * Maneja el guardado de campaña
