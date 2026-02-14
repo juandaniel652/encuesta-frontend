@@ -51,20 +51,21 @@ export function createCampaignHandlers(controller) {
 
     // 🔥 ESTE NO EXISTÍA
     async handleCampaignDelete(campaignId) {
-      console.log('DELETE campaignId:', campaignId);
-
-      if (!confirm('¿Seguro que querés eliminar esta campaña?')) return;
-
       console.log('BORRANDO CAMPAÑA:', campaignId);
-
+        
       await controller.api.deleteCampaign(campaignId);
-
-      controller.state.campaigns =
-        controller.state.campaigns.filter(c => c.id !== campaignId);
-
+        
+      // 🔹 eliminar del estado local
+      controller.state.campaigns = controller.state.campaigns
+        .filter(c => c.id !== campaignId);
+        
+      // 🔹 limpiar selección
       controller.state.selectedCampaignId = null;
-      controller.renderEditor(null);
+        
+      // 🔹 re-render global
       controller.render();
+      controller.campaignEditorView.render(null);
     }
+
   };
 }
