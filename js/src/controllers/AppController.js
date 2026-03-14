@@ -56,17 +56,27 @@ export class AppController {
     const btnRun = btnRunOld.cloneNode(true);
     btnRunOld.replaceWith(btnRun);
     btnRun.addEventListener("click", this.handleRunCampaign.bind(this));
-
+    
     const btnResponsesOld = document.getElementById("btnViewResponses");
     const btnResponses = btnResponsesOld.cloneNode(true);
     btnResponsesOld.replaceWith(btnResponses);
     btnResponses.addEventListener("click", this.handleViewResponses.bind(this));
-
+    
+    // ✅ Botón nueva campaña
+    const btnNewOld = document.getElementById("btnNewCampaign");
+    const btnNew = btnNewOld.cloneNode(true);
+    btnNewOld.replaceWith(btnNew);
+    btnNew.addEventListener("click", () => {
+      this.campaignEditorView.renderClientTypeSelection(
+        (clientType) => this.handleCampaignCreate(clientType)
+      );
+    });
+  
     this.campaignListView = new CampaignListView(
       document.getElementById('campaignList'),
       this.handleCampaignSelect
     );
-
+  
     this.campaignEditorView = new CampaignEditorView(
       document.getElementById('contentArea'),
       {
@@ -80,7 +90,7 @@ export class AppController {
         onQuestionDelete: this.handleDeleteQuestion
       }
     );
-
+  
     this.campaignRunnerView = new CampaignRunnerView(
       document.getElementById('contentArea'),
       {
@@ -88,7 +98,7 @@ export class AppController {
         onCancel: this.handleRunCancel
       }
     );
-
+  
     this.responsesView = new ResponsesView(
       document.getElementById('contentArea'),
       {

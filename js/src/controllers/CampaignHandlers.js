@@ -2,13 +2,32 @@ export function createCampaignHandlers(controller) {
   return {
     async handleCampaignSelect(campaignId) {
       controller.state.selectedCampaignId = campaignId;
-
       const raw = await controller.api.getCampaignById(campaignId);
       const campaign = controller.models.Campaign.fromJSON(raw);
-
       controller.state.setCampaign(campaign);
       controller.renderEditor(campaign);
+      document.getElementById("btnRunCampaign").disabled = false;
+      document.getElementById("btnViewResponses").disabled = false;
+    },
 
+    async handleCampaignCreate(clientType) {
+      const payload = {
+        name: 'Nueva campaña',
+        client_type: clientType,
+        is_active: true
+      };
+
+      const created = await controller.api.createCampaign(payload);
+      const campaign = controller.models.Campaign.fromJSON(created);
+
+      // Agregar al estado
+      controller.state.campaigns.unshift(campaign);
+      controller.state.selectedCampaignId = campaign.id;
+      controller.state.setCampaign(campaign);
+
+      // Render
+      controller.render();
+      controller.campaignEditorView.render(campaign);
       document.getElementById("btnRunCampaign").disabled = false;
       document.getElementById("btnViewResponses").disabled = false;
     },
@@ -16,7 +35,6 @@ export function createCampaignHandlers(controller) {
     async handleCampaignSave(campaignId, updates) {
       const campaign = controller.state.getSelectedCampaign();
       campaign.update(updates);
-
       const payload = {
         campaign: {
           name: campaign.name,
@@ -41,34 +59,26 @@ export function createCampaignHandlers(controller) {
               })) || []
           }))
       };
-
       const payloadToSend = JSON.parse(JSON.stringify(payload));
-
       await controller.api.saveCampaignFull(campaign.id, payloadToSend);
-
       const raw = await controller.api.getCampaignById(campaign.id);
       const fresh = controller.models.Campaign.fromJSON(raw);
       controller.state.setSelectedCampaign(fresh);
       controller.renderEditor(fresh);
     },
 
-    // 🔥 ESTE NO EXISTÍA
     async handleCampaignDelete(campaignId) {
       console.log('BORRANDO CAMPAÑA:', campaignId);
-
       await controller.api.deleteCampaign(campaignId);
-
-      // 🔹 eliminar del estado local
       controller.state.campaigns = controller.state.campaigns
         .filter(c => c.id !== campaignId);
-
-      // 🔹 limpiar selección
       controller.state.selectedCampaignId = null;
-
-      // 🔹 re-render global
       controller.render();
       controller.campaignEditorView.render(null);
-    }
+    },
 
+    async handleCampaignDuplicate(campaignId) {
+      // si tenías lógica de duplicado, va acá
+    }
   };
 }
