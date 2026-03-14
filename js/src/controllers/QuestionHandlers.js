@@ -1,3 +1,6 @@
+import { Question } from '../models/Question.js';
+import { createQuestionCard } from '../views/editorView/questionCard.js';
+
 export function createQuestionHandlers(controller) {
   return {
     async handleOptionUpdate(optionId, updates) {
