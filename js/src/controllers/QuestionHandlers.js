@@ -25,14 +25,15 @@ export function createQuestionHandlers(controller) {
 
     async handleAddQuestion(campaignId) {
       const campaign = controller.state.getSelectedCampaign();
-      const tempId = 'q_' + crypto.randomUUID();
+      const position = campaign.questions.length + 1; // ✅ ANTES del push
 
+      const tempId = 'q_' + crypto.randomUUID();
       const tempQuestion = new Question({
         id: tempId,
         campaign_id: campaignId,
         text: 'Nueva pregunta',
         type: 'text',
-        position: campaign.questions.length + 1,
+        position: position,
         is_active: true,
         options: []
       });
@@ -43,7 +44,8 @@ export function createQuestionHandlers(controller) {
       // 🔹 Render solo la nueva tarjeta
       const questionsList = document.querySelector('.questions-list');
       if (questionsList) {
-        const card = createQuestionCard(tempQuestion, campaign, controller.callbacks);
+        const callbacks = controller.campaignEditorView.callbacks; // ✅ callbacks correctos
+        const card = createQuestionCard(tempQuestion, campaign, callbacks);
         questionsList.appendChild(card);
       }
 
@@ -52,7 +54,7 @@ export function createQuestionHandlers(controller) {
         campaign_id: campaignId,
         text: tempQuestion.text,
         type: tempQuestion.type,
-        position: tempQuestion.position
+        position: position // ✅ usar la variable, no recalcular
       });
 
       tempQuestion.id = created.id;
@@ -79,15 +81,12 @@ export function createQuestionHandlers(controller) {
         question_id: questionId,
         text
       });
-    
+
       // actualizar modelo local
       const question = campaign.questions.find(q => q.id === questionId);
       question.options.push(newOption);
-    
+
       controller.renderEditor(campaign);
-  }
-
-
-
+    }
   };
 }
