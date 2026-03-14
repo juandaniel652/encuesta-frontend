@@ -51,18 +51,22 @@ export class AppController {
   }
 
   initializeViews() {
-
-    const btnRun = document.getElementById("btnRunCampaign");
+    // ✅ Clonar botones para eliminar cualquier listener previo
+    const btnRunOld = document.getElementById("btnRunCampaign");
+    const btnRun = btnRunOld.cloneNode(true);
+    btnRunOld.replaceWith(btnRun);
     btnRun.addEventListener("click", this.handleRunCampaign.bind(this));
 
-    const btnResponses = document.getElementById("btnViewResponses");
+    const btnResponsesOld = document.getElementById("btnViewResponses");
+    const btnResponses = btnResponsesOld.cloneNode(true);
+    btnResponsesOld.replaceWith(btnResponses);
     btnResponses.addEventListener("click", this.handleViewResponses.bind(this));
 
     this.campaignListView = new CampaignListView(
       document.getElementById('campaignList'),
       this.handleCampaignSelect
     );
-  
+
     this.campaignEditorView = new CampaignEditorView(
       document.getElementById('contentArea'),
       {
@@ -71,13 +75,12 @@ export class AppController {
         onDuplicate: this.handleCampaignDuplicate,
         onAddQuestion: this.handleAddQuestion,
         onQuestionUpdate: this.handleQuestionUpdate,
-        onOptionUpdate: this.handleOptionUpdate,   
+        onOptionUpdate: this.handleOptionUpdate,
         onOptionCreate: this.handleOptionCreate,
         onQuestionDelete: this.handleDeleteQuestion
       }
     );
 
-  
     this.campaignRunnerView = new CampaignRunnerView(
       document.getElementById('contentArea'),
       {
@@ -85,7 +88,7 @@ export class AppController {
         onCancel: this.handleRunCancel
       }
     );
-  
+
     this.responsesView = new ResponsesView(
       document.getElementById('contentArea'),
       {
@@ -93,6 +96,4 @@ export class AppController {
       }
     );
   }
-
-
 }
