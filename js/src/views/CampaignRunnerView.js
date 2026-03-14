@@ -51,10 +51,12 @@ export class CampaignRunnerView {
     this._renderQuestions(campaign, questionsContainer);
 
     document.getElementById('cancelRun').addEventListener('click', 
-      () => this.callbacks.onCancel());
+      () => this.callbacks.onCancel(), { once: true }  // ✅
+    );
 
     document.getElementById('runForm').addEventListener('submit', 
-      (e) => this._handleSubmit(e, campaign));
+      (e) => this._handleSubmit(e, campaign), { once: true }  // ✅ solo dispara una vez
+    );
   }
 
   /**
