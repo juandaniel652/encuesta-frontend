@@ -4,22 +4,21 @@
 export function createResponseHandlers(controller) {
   return {
     async handleResponseSubmit(response) {
-      await controller.api.submitResponse(response);
-      alert('Respuesta guardada en backend.');
-
-      const campaign = controller.state.getSelectedCampaign();
-      if (campaign) controller.renderEditor(campaign);
+      try {
+        await controller.api.submitResponse(response);  // ✅ único envío
+        alert('Respuesta registrada.');
+        const campaign = controller.state.getSelectedCampaign();
+        if (campaign) controller.renderEditor(campaign);
+      } catch (error) {
+        alert('Error guardando en el backend: ' + error.message);
+      }
     },
-
     async handleViewResponses() {
       const campaign = controller.state.getSelectedCampaign();
       if (!campaign) return;
-        
       const stats = await controller.api.getResponsesByCampaign(campaign.id);
       controller.responsesView.render(stats, campaign);
     },
-
-
     handleResponsesBack() {
       const campaign = controller.state.getSelectedCampaign();
       if (campaign) controller.renderEditor(campaign);

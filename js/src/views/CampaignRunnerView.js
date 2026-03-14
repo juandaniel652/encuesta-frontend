@@ -123,36 +123,25 @@ export class CampaignRunnerView {
    */
   async _handleSubmit(event, campaign) {
     event.preventDefault();
-
+    
     const clientNumber = document.getElementById('clientNumber').value.trim();
     const clientName = document.getElementById('clientName').value.trim();
-
+    
     if (!clientNumber || !clientName) {
       alert('Completar número y nombre del cliente.');
       return;
     }
-
-    // Validar que todas las preguntas tengan respuesta
+  
     const isValid = this._validateAllQuestionsAnswered(campaign);
     if (!isValid) {
       alert('Falta seleccionar alguna respuesta.');
       return;
     }
-
-    // Crear objeto de respuesta
+  
     const response = this._createResponse(campaign, clientNumber, clientName);
-
-    try {
-      // Enviar al backend
-      await apiService.submitResponse(response);
-      alert('Respuesta registrada.');
-      
-      // Llamar callback de éxito
-      this.callbacks.onSubmit(response);
-    } catch (error) {
-      console.error(error);
-      alert('Error guardando en el backend: ' + error.message);
-    }
+  
+    // ✅ Solo llama el callback, NO envía directamente
+    this.callbacks.onSubmit(response);
   }
 
   /**
